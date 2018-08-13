@@ -36,8 +36,9 @@ public class AcmerController {
     }
 
     @GetMapping(value = "/{handle}/add")
-    public void addAcmerByHandle(@PathVariable("handle") String handle) throws IOException {
+    public Collection<Acmer> addAcmerByHandle(@PathVariable("handle") String handle) throws IOException {
         this.acmerDao.addAcmerByHandle(handle);
+        return getAllAcmer();
     }
 /*
     @PostMapping(value="/Acmers/add")
