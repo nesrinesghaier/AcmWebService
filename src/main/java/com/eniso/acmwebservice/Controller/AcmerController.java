@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.Collection;
 
 @RestController
@@ -34,14 +35,14 @@ public class AcmerController {
         this.acmerService.deleteAcmerByHandle(handle);
     }
 
-    @GetMapping(value = "/handle/add")
-    public void addAcmerByHandle(String handle){
+    @GetMapping(value = "/{handle}/add")
+    public void addAcmerByHandle(@PathVariable("handle") String handle) throws IOException {
         this.acmerDao.addAcmerByHandle(handle);
     }
 /*
     @PostMapping(value="/Acmers/add")
     public  Acmer addAcmer(@RequestBody Acmer acmer){
-        Acmer _acmer = acmerDao.save(new Acmer(acmer.getHandle(),acmer.getEmail(),acmer.getFirstName(),acmer.getLasttName(),
+        Acmer _acmer = acmerDao.save(new Acmer(acmer.getHandle(),acmer.getEmail(),acmer.getFirstName(),acmer.getLastName(),
                 acmer.getCountry(),acmer.getRank(),acmer.getMaxRank(),acmer.getRating(),acmer.getMaxRating(),acmer.getProblemSolved()));
         return _acmer;
     }

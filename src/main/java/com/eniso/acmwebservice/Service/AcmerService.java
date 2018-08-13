@@ -5,6 +5,7 @@ import com.eniso.acmwebservice.Entity.Acmer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Collection;
 
 @Service
@@ -24,7 +25,7 @@ public class AcmerService    {
         this.acmerDao.deleteAcmerByHandle(handle);
     }
 
-    public void addAcmerByHandle(String handle){
+    public void addAcmerByHandle(String handle) throws IOException {
         this.acmerDao.addAcmerByHandle(handle);
     }
 

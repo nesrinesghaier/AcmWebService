@@ -1,17 +1,20 @@
 package com.eniso.acmwebservice.Entity;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Acmer {
+    @Column(name = "lastName")
+    private  String lastName;
     @Id
     private  String handle;
     @Column(name = "email")
     private  String email;
     @Column(name = "firstName")
     private  String firstName;
-    @Column(name = "lasttName")
-    private  String lasttName;
     @Column(name = "country")
     private  String country;
     @Column(name = "rank")
@@ -28,11 +31,11 @@ public class Acmer {
     private  Role role;
 
 
-    public Acmer(String handle, String email, String firstName, String lasttName, String country, String rank, String maxRank, int rating, int maxRating, int problemSolved,Role role) {
+    public Acmer(String handle, String email, String firstName, String lastName, String country, String rank, String maxRank, int rating, int maxRating, int problemSolved, Role role) {
+        this.lastName = lastName;
         this.handle = handle;
         this.email = email;
         this.firstName = firstName;
-        this.lasttName = lasttName;
         this.country = country;
         this.rank = rank;
         this.maxRank = maxRank;
@@ -74,12 +77,12 @@ public class Acmer {
         this.firstName = firstName;
     }
 
-    public String getLasttName() {
-        return lasttName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLasttName(String lasttName) {
-        this.lasttName = lasttName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getCountry() {
@@ -132,5 +135,20 @@ public class Acmer {
 
     public Acmer(){}
 
-
+    @Override
+    public String toString() {
+        return "Acmer{" +
+                "lastName='" + lastName + '\'' +
+                ", handle='" + handle + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", country='" + country + '\'' +
+                ", rank='" + rank + '\'' +
+                ", maxRank='" + maxRank + '\'' +
+                ", rating=" + rating +
+                ", maxRating=" + maxRating +
+                ", problemSolved=" + problemSolved +
+                ", role=" + role +
+                '}';
+    }
 }
