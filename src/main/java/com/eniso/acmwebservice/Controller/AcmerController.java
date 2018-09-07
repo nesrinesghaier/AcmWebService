@@ -2,14 +2,23 @@ package com.eniso.acmwebservice.Controller;
 
 import com.eniso.acmwebservice.Dao.AcmerDao;
 import com.eniso.acmwebservice.Entity.Acmer;
-import com.eniso.acmwebservice.Service.AcmerService;
+import com.eniso.acmwebservice.Service.AcmerRepository;
+import com.eniso.acmwebservice.Service.StorageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.IOException;
-import java.util.Collection;
+import javax.persistence.EntityManager;
+import java.io.*;
+import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/acmers")
 @Controller
@@ -18,64 +27,101 @@ public class AcmerController {
     AcmerDao acmerDao;
 
     @Autowired
-    private AcmerService acmerService;
+    StorageService storageService;
+    EntityManager entityManager;
+    List<String> files = new ArrayList<String>();
+    @Autowired
+    private AcmerRepository acmerRepository;
 
-    @GetMapping(value="")
-        public Collection<Acmer> getAllAcmer(){
-        return  acmerService.getAllAcmers();
+    @GetMapping(value = "")
+    public Collection<Acmer> getAllAcmer() {
+        List<Acmer> acmerList = new ArrayList<>();
+        acmerRepository.findAll().forEach(acmerList::add);
+        return acmerList;
     }
 
-    @GetMapping(value="/{handle}")
-    public Acmer getAcmerByHandle(@PathVariable("handle") String handle){
-        return acmerService.getAcmerByHandle(handle);
+    @PostMapping("/createAll")
+    public Collection<Acmer> UploadFile(MultipartHttpServletRequest request) throws IOException {
+        Iterator<String> itr = request.getFileNames();
+        MultipartFile file = request.getFile(itr.next());
+        String fileName = file.getOriginalFilename();
+        ObjectMapper mapper = new ObjectMapper();
+        com.fasterxml.jackson.databind.type.TypeFactory factory = mapper.getTypeFactory();
+        CollectionType listType = factory.constructCollectionType(List.class, Acmer.class);
+        StringWriter writer = new StringWriter();
+        InputStream inputStream = file.getInputStream();
+        List<Acmer> list = new ArrayList<>();
+        try {
+            Scanner sc = new Scanner(inputStream);
+            StringBuilder sb = new StringBuilder("");
+            while (sc.hasNext()) {
+                sb.append(sc.next());
+            }
+            list = mapper.readValue(sb.toString(), listType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < list.size(); i++) {
+            Acmer acmer = list.get(i);
+            if(acmer!=null){
+                int solved =acmer.getAcmerSolvedProblems(acmer.getHandle());
+                acmer.setSolvedProblems(solved);
+            }
+        }
+        acmerRepository.saveAll(list);
+        return list;
     }
 
-    @DeleteMapping(value = "/{handle}")
-    public void deleteAcmerByHandle(@PathVariable("handle") String handle){
-        this.acmerService.deleteAcmerByHandle(handle);
-    }
-
-    @GetMapping(value = "/{handle}/add")
-    public Collection<Acmer> addAcmerByHandle(@PathVariable("handle") String handle) throws IOException {
-        this.acmerDao.addAcmerByHandle(handle);
-        return getAllAcmer();
-    }
-/*
-    @PostMapping(value="/Acmers/add")
-    public  Acmer addAcmer(@RequestBody Acmer acmer){
-        Acmer _acmer = acmerDao.save(new Acmer(acmer.getHandle(),acmer.getEmail(),acmer.getFirstName(),acmer.getLastName(),
-                acmer.getCountry(),acmer.getRank(),acmer.getMaxRank(),acmer.getRating(),acmer.getMaxRating(),acmer.getProblemSolved()));
+    @PostMapping(value = "/create")
+    public Acmer createAcmer(@RequestBody String handle) throws IOException {
+        Acmer _acmer = new Acmer(handle);
+        acmerRepository.save(_acmer);
         return _acmer;
     }
 
-    @DeleteMapping("/Acmers/{handle}")
-    public ResponseEntity<String> deleteAcmer(@PathVariable("handle") String handle) {
-
-        System.out.println("Delete Customer with handle = " + handle + "...");
-
-        acmerDao.deleteById(handle);
-
-        return new ResponseEntity<>("Customer has been deleted!", HttpStatus.OK);
+    public String createAcmers(@RequestParam("file") MultipartFile file) {
+        return file.getOriginalFilename();
     }
 
-    @DeleteMapping("/Acmers/delete")
-    public ResponseEntity<String> deleteAllCustomers() {
-        System.out.println("Delete All Acmers...");
-
-        acmerDao.deleteAll();
-
-        return new ResponseEntity<>("All Acmers have been deleted!", HttpStatus.OK);
-    }
-    @GetMapping(value = "acmers/{handle}")
-    public Acmer findByHundle(@PathVariable String handle) {
-
-        Acmer acmer = acmerDao.findAcmerByHandle(handle);
-        return acmer ;
+    @DeleteMapping("/delete/{handle}")
+    public Collection<Acmer> deleteAcmer(@PathVariable("handle") String handle) {
+        Acmer acmer = acmerRepository.findByHandle(handle);
+        acmerRepository.delete(acmer);
+        List<Acmer> acmerList = new ArrayList<>();
+        acmerRepository.findAll().forEach(acmerList::add);
+        return acmerList;
     }
 
+    @DeleteMapping("/deleteAll")
+    public Collection<Acmer> deleteAllAcmers() {
+        acmerRepository.deleteAll();
+        List<Acmer> acmerList = new ArrayList<>();
+        acmerRepository.findAll().forEach(acmerList::add);
+        return acmerList;
+    }
 
-    /*@RequestMapping(value = "/{handle}",method = RequestMethod.GET)
-    public String getAcmerByHandle(@PathVariable("handle") String handle) {
-        return acmerService.getAcmerSolvedProblems(handle);
-    }*/
+    @GetMapping(value = "/{handle}")
+    public Acmer findByHandle(@PathVariable String handle) {
+        Acmer acmer = acmerRepository.findByHandle(handle);
+        return acmer;
+    }
+
+    @PutMapping("/{handle}")
+    public ResponseEntity<Acmer> updateAcmer(@PathVariable("handle") String handle, @RequestBody Acmer acmer) {
+        System.out.println("Update Acmer with handle = " + handle + "...");
+
+        Optional<Acmer> customerData = acmerRepository.findById(handle);
+
+        if (customerData.isPresent()) {
+            Acmer _acmer = customerData.get();
+            _acmer.setEmail(acmer.getEmail());
+            _acmer.setCountry(acmer.getCountry());
+            _acmer.setFirstName(acmer.getFirstName());
+            _acmer.setLastName(acmer.getLastName());
+            _acmer.setRole(acmer.getRole());
+            return new ResponseEntity<>(acmerRepository.save(_acmer), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

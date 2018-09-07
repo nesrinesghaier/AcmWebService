@@ -20,7 +20,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.eniso.acmwebservice.Entity.Role;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @Repository
 
 public class AcmerDao {

@@ -1,19 +1,30 @@
 package com.eniso.acmwebservice.Entity;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Acmer {
+    @Nullable
     @Column(name = "lastName")
     private  String lastName;
     @Id
     private  String handle;
     @Column(name = "email")
+    @Nullable
     private  String email;
     @Column(name = "firstName")
+    @Nullable
     private  String firstName;
     @Column(name = "country")
     private  String country;
@@ -25,13 +36,27 @@ public class Acmer {
     private  int rating;
     @Column(name = "maxRating")
     private  int maxRating;
-    @Column(name = "problemSolved")
-    private  int problemSolved;
+    @Column(name = "solvedProblems")
+    private  int solvedProblems;
     @Enumerated(EnumType.STRING)
     private  Role role;
 
 
-    public Acmer(String handle, String email, String firstName, String lastName, String country, String rank, String maxRank, int rating, int maxRating, int problemSolved, Role role) {
+    public Acmer(String handle) throws IOException {
+        Acmer acmer = getAcmerInfosByHandle(handle);
+        this.lastName = acmer.getLastName();
+        this.handle = handle;
+        this.email = acmer.getEmail();
+        this.firstName = acmer.getFirstName();
+        this.country = acmer.getCountry();
+        this.rank = acmer.getRank();
+        this.maxRank = acmer.getMaxRank();
+        this.rating = acmer.getRating();
+        this.maxRating = acmer.getMaxRating();
+        this.solvedProblems = getAcmerSolvedProblems(handle);
+        this.role = acmer.getRole();
+    }
+    public Acmer(String handle, String email, String firstName, String lastName, String country, String rank, String maxRank, int rating, int maxRating, int solvedProblems, Role role) {
         this.lastName = lastName;
         this.handle = handle;
         this.email = email;
@@ -41,10 +66,25 @@ public class Acmer {
         this.maxRank = maxRank;
         this.rating = rating;
         this.maxRating = maxRating;
-        this.problemSolved = problemSolved;
+        this.solvedProblems = solvedProblems;
         this.role = role;
     }
 
+    public Acmer getAcmerInfosByHandle(String handle) throws IOException {
+        Acmer acmer = new Acmer();
+        StringBuilder sb = new StringBuilder();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String string = new String("");
+        AcmerWrapper result = objectMapper.readValue(new URL("http://codeforces.com/api/user.info?handles=" + handle), AcmerWrapper.class);
+        acmer = result.getResult().get(0);
+
+        if (acmer.getHandle().equals("bacali") || acmer.getHandle().equals("myob-_-")) {
+            acmer.setRole(Role.ADMIN);
+        } else {
+            acmer.setRole(Role.USER);
+        }
+        return acmer;
+    }
     public Role getRole() {
         return role;
     }
@@ -125,12 +165,12 @@ public class Acmer {
         this.maxRating = maxRating;
     }
 
-    public int getProblemSolved() {
-        return problemSolved;
+    public int getSolvedProblems() {
+        return solvedProblems;
     }
 
-    public void setProblemSolved(int problemSolved) {
-        this.problemSolved = problemSolved;
+    public void setSolvedProblems(int solvedProblems) {
+        this.solvedProblems = solvedProblems;
     }
 
     public Acmer(){}
@@ -147,8 +187,41 @@ public class Acmer {
                 ", maxRank='" + maxRank + '\'' +
                 ", rating=" + rating +
                 ", maxRating=" + maxRating +
-                ", problemSolved=" + problemSolved +
+                ", solvedProblems=" + solvedProblems +
                 ", role=" + role +
                 '}';
+    }
+
+    public int getAcmerSolvedProblems(String handle) {
+        Set<String> set = new HashSet();
+        Map<String, Integer> problemTypes = new TreeMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        StringBuilder sb = new StringBuilder();
+        try {
+            JsonResult result = objectMapper.readValue(new URL("http://codeforces.com/api/user.status?handle=" + handle), JsonResult.class);
+            int problemSolved = 0;
+
+            for (int i = 0; i < result.getResult().size(); i++) {
+                if (result.getResult().get(i).getVerdict().equals("OK")) {
+                    Problem problem = result.getResult().get(i).getProblem();
+                    if (!set.contains(problem.getName())) {
+                        if (!problemTypes.containsKey(problem.getIndex())) {
+                            problemTypes.put(problem.getIndex(), 0);
+                        }
+                        problemTypes.put(problem.getIndex(), problemTypes.get(problem.getIndex()) + 1);
+                    }
+                    set.add(problem.getName());
+
+                }
+            }
+            sb.append(set.size()).append("<br>");
+            for (Map.Entry e : problemTypes.entrySet()) {
+                sb.append(e.getKey()).append("   ").append(e.getValue()).append("<br>");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return set.size();
     }
 }
