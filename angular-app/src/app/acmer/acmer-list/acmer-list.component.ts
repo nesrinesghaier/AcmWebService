@@ -1,5 +1,6 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {AcmerService} from "../acmer.service";
+import {Component, OnInit, EventEmitter,Output,ViewChild } from '@angular/core';
+import { FileQueueObject, AcmerService } from './../acmer.service';
+
 import {Acmer} from "../acmer";
 import {Observable} from "rxjs/index";
 import {Router} from "@angular/router";
@@ -20,15 +21,14 @@ export class AcmerListComponent implements OnInit {
   empty:string= "####";
   apiEndPoint ="http://localhost:8080/acmers/createAll";
   handle:string;
+  @Output() onCompleteItem = new EventEmitter();
 
-
+  @ViewChild('fileInput') fileInput;
+  queue: Observable<FileQueueObject[]>;
   constructor(private acmerService: AcmerService,private router: Router,private http: HttpClient) {
   }
-
-  ngOnInit() {
-    this.acmerService.getAllAcmers().subscribe(data => {
-      this.acmers = data;
-    });
+  completeItem = (item: FileQueueObject, response: any) => {
+    this.onCompleteItem.emit({ item, response });
   }
 
   getAllAcmers() {
@@ -73,5 +73,18 @@ export class AcmerListComponent implements OnInit {
     }else {
       alert("please select a valid file");
     }
+  }
+
+  ngOnInit() {
+    this.acmerService.getAllAcmers().subscribe(data => {
+      this.acmers = data;
+    });
+    this.queue = this.acmerService.queue;
+    this.acmerService.onCompleteItem = this.completeItem;
+  }
+
+  addToQueue() {
+    const fileBrowser = this.fileInput.nativeElement;
+    this.acmerService.addToQueue(fileBrowser.files);
   }
 }
