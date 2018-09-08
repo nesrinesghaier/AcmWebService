@@ -1,5 +1,7 @@
 import {Component, OnInit, EventEmitter,Output,ViewChild } from '@angular/core';
 import { FileQueueObject, AcmerService } from './../acmer.service';
+import {MatMenuModule} from '@angular/material/menu';
+import { ObservableMedia } from '@angular/flex-layout';
 
 import {Acmer} from "../acmer";
 import {Observable} from "rxjs/index";
@@ -29,6 +31,7 @@ export class AcmerListComponent implements OnInit {
   }
   completeItem = (item: FileQueueObject, response: any) => {
     this.onCompleteItem.emit({ item, response });
+
   }
 
   getAllAcmers() {
@@ -56,7 +59,7 @@ export class AcmerListComponent implements OnInit {
   };
 
   refreshPage() :void{
-    this.router.navigate(['acmers']);
+    window.location.reload();
   };
   fileUpload(event) {
     let fileList: FileList = event.target.files;

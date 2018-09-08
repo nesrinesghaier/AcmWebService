@@ -6,6 +6,9 @@ import { AppComponent } from './app.component';
 import {AcmerModule} from "./acmer/acmer.module";
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import {AcmerService} from "./acmer/acmer.service";
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { MatMenuModule,MatButtonModule} from '@angular/material';
+
 
 @NgModule({
   declarations: [
@@ -16,6 +19,9 @@ import {AcmerService} from "./acmer/acmer.service";
     AppRoutingModule,
     HttpClientModule,
     AcmerModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatMenuModule,
   ],
   providers: [AcmerService],
   bootstrap: [AppComponent]
