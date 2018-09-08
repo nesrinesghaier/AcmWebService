@@ -8,6 +8,7 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import {AcmerService} from "./acmer/acmer.service";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { MatMenuModule,MatButtonModule} from '@angular/material';
+import { SlimLoadingBarModule } from 'ng2-slim-loading-bar';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { MatMenuModule,MatButtonModule} from '@angular/material';
     BrowserAnimationsModule,
     MatButtonModule,
     MatMenuModule,
+    SlimLoadingBarModule,
   ],
   providers: [AcmerService],
   bootstrap: [AppComponent]

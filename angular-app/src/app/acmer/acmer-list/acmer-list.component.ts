@@ -1,3 +1,4 @@
+///<reference path="../../../../node_modules/@angular/router/src/router.d.ts"/>
 import {Component, OnInit, EventEmitter,Output,ViewChild } from '@angular/core';
 import { FileQueueObject, AcmerService } from './../acmer.service';
 import {MatMenuModule} from '@angular/material/menu';
@@ -5,7 +6,7 @@ import { ObservableMedia } from '@angular/flex-layout';
 
 import {Acmer} from "../acmer";
 import {Observable} from "rxjs/index";
-import {Router} from "@angular/router";
+import {NavigationExtras, Router} from "@angular/router";
 import { FileUploader } from 'ng2-file-upload';
 import {AngularFileUploaderComponent} from "angular-file-uploader";
 import {RequestOptions} from "@angular/http";
@@ -49,7 +50,15 @@ export class AcmerListComponent implements OnInit {
     }, error => console.log(error));
   }
   editAcmer(acmer:Acmer){
-
+    let navigationExtras: NavigationExtras = {
+      queryParams: {
+        "handle":acmer.handle,
+        "firstname":acmer.firstName,
+        "lastname": acmer.lastName,
+        "email":acmer.email,
+      }
+    };
+    this.router.navigate(['/acmers/edit'],navigationExtras);
   }
   deleteAcmers() {
     this.acmerService.deleteAllAcmers().subscribe(data => {
