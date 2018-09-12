@@ -79,9 +79,6 @@ public class AcmerController {
         return _acmer;
     }
 
-    public String createAcmers(@RequestParam("file") MultipartFile file) {
-        return file.getOriginalFilename();
-    }
 
     @DeleteMapping("/delete/{handle}")
     public Collection<Acmer> deleteAcmer(@PathVariable("handle") String handle) {
@@ -106,7 +103,7 @@ public class AcmerController {
         return acmer;
     }
 
-    @PutMapping("/{handle}")
+    @PutMapping("/edit/{handle}")
     public ResponseEntity<Acmer> updateAcmer(@PathVariable("handle") String handle, @RequestBody Acmer acmer) {
         System.out.println("Update Acmer with handle = " + handle + "...");
 

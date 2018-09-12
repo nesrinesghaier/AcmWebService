@@ -1,17 +1,10 @@
-///<reference path="../../../../node_modules/@angular/router/src/router.d.ts"/>
-import {Component, OnInit, EventEmitter,Output,ViewChild } from '@angular/core';
-import { FileQueueObject, AcmerService } from './../acmer.service';
-import {MatMenuModule} from '@angular/material/menu';
-import { ObservableMedia } from '@angular/flex-layout';
 
+import {Component, OnInit, EventEmitter, Output, ViewChild, Input} from '@angular/core';
+import {FileQueueObject, AcmerService} from './../acmer.service';
+import {first} from "rxjs/operators";
 import {Acmer} from "../acmer";
 import {Observable} from "rxjs/index";
-import {NavigationExtras, Router} from "@angular/router";
-import { FileUploader } from 'ng2-file-upload';
-import {AngularFileUploaderComponent} from "angular-file-uploader";
-import {RequestOptions} from "@angular/http";
-import {Http, Response} from "@angular/http";
-import {HttpClient} from "@angular/common/http";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-acmer-list',
@@ -21,45 +14,52 @@ import {HttpClient} from "@angular/common/http";
 })
 export class AcmerListComponent implements OnInit {
   acmers: Acmer[];
-  empty:string= "####";
-  apiEndPoint ="http://localhost:8080/acmers/createAll";
-  handle:string;
+  selectedAcmer: Acmer;
+  empty: string = "####";
+  firstName: string;
+  lastName: string;
+  email: string;
+  country: string;
+  apiEndPoint = "http://localhost:8080/acmers/createAll";
+  handle: string;
   @Output() onCompleteItem = new EventEmitter();
-
+  @Input() acmer:Acmer;
   @ViewChild('fileInput') fileInput;
   queue: Observable<FileQueueObject[]>;
-  constructor(private acmerService: AcmerService,private router: Router,private http: HttpClient) {
-  }
   completeItem = (item: FileQueueObject, response: any) => {
-    this.onCompleteItem.emit({ item, response });
+    this.onCompleteItem.emit({item, response});
 
+  }
+
+  constructor(private acmerService: AcmerService, private router: Router, private route: ActivatedRoute) {
   }
 
   getAllAcmers() {
     console.log('fetching');
-    if(this.acmers) console.log('empty');
+    if (this.acmers) console.log('empty');
     this.acmerService.getAllAcmers().subscribe(data => {
       this.acmers = data;
     }, error => console.log(error));
   }
 
-  deleteAcmer(acmer:Acmer){
+  deleteAcmer(acmer: Acmer) {
     console.log(acmer.handle);
     this.acmerService.deleteAcmer(acmer).subscribe(data => {
-      this.acmers = this.acmers.filter(a=> a!== acmer);
+      this.acmers = this.acmers.filter(a => a !== acmer);
     }, error => console.log(error));
   }
-  editAcmer(acmer:Acmer){
-    let navigationExtras: NavigationExtras = {
-      queryParams: {
-        "handle":acmer.handle,
-        "firstname":acmer.firstName,
-        "lastname": acmer.lastName,
-        "email":acmer.email,
-      }
-    };
-    this.router.navigate(['/acmers/edit'],navigationExtras);
+
+  editAcmer(acmer: Acmer) {
+
+    localStorage.removeItem("acmerHandle");
+    localStorage.setItem("acmerHandle", acmer.handle);
+    localStorage.setItem("acmerEmail", acmer.email);
+    localStorage.setItem("acmerFirstName", acmer.firstName);
+    localStorage.setItem("acmerLastName", acmer.lastName);
+    localStorage.setItem("acmerCountry", acmer.country);
+    this.router.navigate(['/acmers/edit',acmer.handle]);
   }
+
   deleteAcmers() {
     this.acmerService.deleteAllAcmers().subscribe(data => {
       window.location.reload();
@@ -67,25 +67,9 @@ export class AcmerListComponent implements OnInit {
 
   };
 
-  refreshPage() :void{
+  refreshPage(): void {
     window.location.reload();
   };
-  fileUpload(event) {
-    let fileList: FileList = event.target.files;
-    if(fileList.length > 0) {
-      let file: File = fileList[0];
-      let formData:FormData = new FormData();
-      formData.append('uploadFile', file, file.name);
-      let headers = new Headers();
-      headers.append('Accept', 'application/json');
-      this.http.post(this.apiEndPoint, formData).subscribe(
-          error => console.log(error)
-        );
-      alert("upload done");
-    }else {
-      alert("please select a valid file");
-    }
-  }
 
   ngOnInit() {
     this.acmerService.getAllAcmers().subscribe(data => {
