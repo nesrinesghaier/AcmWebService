@@ -3,8 +3,11 @@ import {Component, OnInit, EventEmitter, Output, ViewChild, Input} from '@angula
 import {FileQueueObject, AcmerService} from './../acmer.service';
 import {first} from "rxjs/operators";
 import {Acmer} from "../acmer";
-import {Observable} from "rxjs/index";
 import {ActivatedRoute, Router} from "@angular/router";
+import { DataSource } from '@angular/cdk/collections';
+import { MatPaginator, MatSort } from '@angular/material';
+import { map } from 'rxjs/operators';
+import { Observable, of as observableOf, merge } from 'rxjs';
 
 @Component({
   selector: 'app-acmer-list',
@@ -12,16 +15,21 @@ import {ActivatedRoute, Router} from "@angular/router";
   styleUrls: ['./acmer-list.component.css'],
   providers: [AcmerService]
 })
-export class AcmerListComponent implements OnInit {
+
+
+
+export class AcmerListComponent implements OnInit  {
+
   acmers: Acmer[];
   selectedAcmer: Acmer;
-  empty: string = "####";
+  empty: string = "";
   firstName: string;
   lastName: string;
   email: string;
   country: string;
   apiEndPoint = "http://localhost:8080/acmers/createAll";
   handle: string;
+
   @Output() onCompleteItem = new EventEmitter();
   @Input() acmer:Acmer;
   @ViewChild('fileInput') fileInput;
@@ -34,31 +42,13 @@ export class AcmerListComponent implements OnInit {
   constructor(private acmerService: AcmerService, private router: Router, private route: ActivatedRoute) {
   }
 
-  getAllAcmers() {
-    console.log('fetching');
-    if (this.acmers) console.log('empty');
-    this.acmerService.getAllAcmers().subscribe(data => {
-      this.acmers = data;
-    }, error => console.log(error));
-  }
-
   deleteAcmer(acmer: Acmer) {
-    console.log(acmer.handle);
     this.acmerService.deleteAcmer(acmer).subscribe(data => {
       this.acmers = this.acmers.filter(a => a !== acmer);
     }, error => console.log(error));
   }
 
-  editAcmer(acmer: Acmer) {
 
-    localStorage.removeItem("acmerHandle");
-    localStorage.setItem("acmerHandle", acmer.handle);
-    localStorage.setItem("acmerEmail", acmer.email);
-    localStorage.setItem("acmerFirstName", acmer.firstName);
-    localStorage.setItem("acmerLastName", acmer.lastName);
-    localStorage.setItem("acmerCountry", acmer.country);
-    this.router.navigate(['/acmers/edit',acmer.handle]);
-  }
 
   deleteAcmers() {
     this.acmerService.deleteAllAcmers().subscribe(data => {
@@ -74,7 +64,9 @@ export class AcmerListComponent implements OnInit {
   ngOnInit() {
     this.acmerService.getAllAcmers().subscribe(data => {
       this.acmers = data;
-    });
+    }, error => console.log(error));
+    //this.dataSource = new AcmersListDataSource(this.paginator, this.sort,this.acmerService);
+    //this.dataSource.loadAcmersData(this.acmerService);
     this.queue = this.acmerService.queue;
     this.acmerService.onCompleteItem = this.completeItem;
   }

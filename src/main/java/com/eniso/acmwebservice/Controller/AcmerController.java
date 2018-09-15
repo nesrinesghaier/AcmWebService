@@ -80,10 +80,12 @@ public class AcmerController {
     }
 
 
-    @DeleteMapping("/delete/{handle}")
+    @DeleteMapping("/delete/{handle:.+}")
     public Collection<Acmer> deleteAcmer(@PathVariable("handle") String handle) {
         Acmer acmer = acmerRepository.findByHandle(handle);
-        acmerRepository.delete(acmer);
+        if(acmer!=null){
+            acmerRepository.delete(acmer);
+        }
         List<Acmer> acmerList = new ArrayList<>();
         acmerRepository.findAll().forEach(acmerList::add);
         return acmerList;
@@ -97,19 +99,19 @@ public class AcmerController {
         return acmerList;
     }
 
-    @GetMapping(value = "/{handle}")
+    @GetMapping(value = "/{handle:.+}")
     public Acmer findByHandle(@PathVariable String handle) {
         Acmer acmer = acmerRepository.findByHandle(handle);
         return acmer;
     }
 
-    @PutMapping("/edit/{handle}")
-    public ResponseEntity<Acmer> updateAcmer(@PathVariable("handle") String handle, @RequestBody Acmer acmer) {
-        System.out.println("Update Acmer with handle = " + handle + "...");
-
+    @PutMapping(value = "/edit/{handle:.+}")
+    public Acmer updateAcmer(@PathVariable String handle, @RequestBody Acmer acmer) {
+        System.out.println("Update Acmer with handle = " + "...");
+        acmerRepository.save(acmer);
         Optional<Acmer> customerData = acmerRepository.findById(handle);
 
-        if (customerData.isPresent()) {
+        /*if (customerData.isPresent()) {
             Acmer _acmer = customerData.get();
             _acmer.setEmail(acmer.getEmail());
             _acmer.setCountry(acmer.getCountry());
@@ -117,8 +119,8 @@ public class AcmerController {
             _acmer.setLastName(acmer.getLastName());
             _acmer.setRole(acmer.getRole());
             return new ResponseEntity<>(acmerRepository.save(_acmer), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        } else {*/
+            return acmer;
+        //}
     }
 }

@@ -8,7 +8,7 @@ export class Acmer {
   maxRank: string;
   rating: number;
   maxRating: number;
-  problemSolved: number;
+  solvedProblems: number;
   role:Role;
 
 
