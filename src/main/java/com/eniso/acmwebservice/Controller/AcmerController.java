@@ -47,14 +47,13 @@ public class AcmerController {
     }
 
     @PostMapping("/createAll")
-    public Collection<Acmer> UploadFile(MultipartHttpServletRequest request) throws IOException {
+    public void UploadFile(MultipartHttpServletRequest request) throws IOException {
+        getAllAvailableContests();
         Iterator<String> itr = request.getFileNames();
         MultipartFile file = request.getFile(itr.next());
-        String fileName = file.getOriginalFilename();
         ObjectMapper mapper = new ObjectMapper();
         TypeFactory factory = mapper.getTypeFactory();
         CollectionType listType = factory.constructCollectionType(List.class, Acmer.class);
-        StringWriter writer = new StringWriter();
         InputStream inputStream = file.getInputStream();
         List<Acmer> list = new ArrayList<>();
         try {
@@ -71,15 +70,15 @@ public class AcmerController {
             Acmer acmer = list.get(i);
             String handle = acmer.getHandle();
             String password = acmer.getPassword();
-            System.out.println("handle = " + handle + " password " + password);
+
             if (acmer != null) {
                 acmer = getAcmerInfosByHandle(handle);
-                updateAcmerSolvedProblemsAndScore(acmer);
+                acmer = updateAcmerSolvedProblemsAndScore(acmer);
                 acmer.setPassword(password);
+                acmerRepository.save(acmer);
+
             }
         }
-        if (!list.isEmpty()) acmerRepository.saveAll(list);
-        return list;
     }
 
     @PostMapping(value = "/create")
@@ -92,17 +91,29 @@ public class AcmerController {
         String firstName = rootNode.path("firstName").asText();
         String lastName = rootNode.path("lastName").asText();
         String email = rootNode.path("email").asText();
+        Optional<Acmer> acmerData = acmerRepository.findById(handle);
+        if (acmerData.isPresent()) {
+            Acmer acmerDB = acmerData.get();
+            acmerDB.setEmail(email);
+            acmerDB.setCountry("Tunisia");
+            acmerDB.setFirstName(firstName);
+            acmerDB.setLastName(lastName);
+            acmerDB = updateAcmerSolvedProblemsAndScore(acmerDB);
+            acmerDB.setPassword(password);
+            acmerRepository.save(acmerDB);
+            return;
+        }
         Acmer acmer = getAcmerInfosByHandle(handle);
-        System.out.println(acmer.toString());
-        if (acmer.getEmail() == null)
+        acmer = updateAcmerSolvedProblemsAndScore(acmer);
+        if (acmer.getEmail() == null && !email.isEmpty())
             acmer.setEmail(email);
-        if (acmer.getFirstName() == null)
+        if (acmer.getFirstName().isEmpty() && !firstName.isEmpty())
             acmer.setFirstName(firstName);
-        if (acmer.getLastName() == null)
+        if (acmer.getLastName().isEmpty() && !lastName.isEmpty())
             acmer.setLastName(lastName);
         acmer.setPassword(password);
         acmer.setCountry("Tunisia");
-        updateAcmerSolvedProblemsAndScore(acmer);
+        //System.out.println(acmer.toString() + " after update ");
         if (acmer != null)
             acmerRepository.save(acmer);
     }
@@ -173,16 +184,12 @@ public class AcmerController {
     }
 
 
-    public void updateAcmerSolvedProblemsAndScore(Acmer acmer) {
+    public Acmer updateAcmerSolvedProblemsAndScore(Acmer acmer) {
         Set<String> set = new HashSet();
-        Map<String, Integer> problemTypes = new TreeMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        StringBuilder sb = new StringBuilder();
         try {
             URL url = new URL("http://codeforces.com/api/user.status?handle=" + acmer.getHandle());
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setConnectTimeout(15000);
-            urlConnection.setReadTimeout(10000);
             urlConnection.connect();
             JsonSubResult result = objectMapper.readValue(url, JsonSubResult.class);
             Map<String, Integer> problemsCount = new HashMap<>();
@@ -217,22 +224,25 @@ public class AcmerController {
                 }
             }
             int size = set.size();
-            Optional<Acmer> acmerData = acmerRepository.findById(acmer.getHandle());
-            if (acmerData.isPresent()) {
-                Acmer acmerDB = acmerData.get();
-                if (acmerDB.getSolvedProblems() != size) {
+            Acmer acmerDB = acmerRepository.findByHandle(acmer.getHandle());
+            if (acmerDB!=null) {
+                if (acmerDB.getSolvedProblems() < size) {
+                    System.out.println("acmer changed " + acmer.toString());
+                    int score = calculScore(problemsCount);
+                    acmerDB.setScore(score);
                     acmerDB.setSolvedProblems(size);
-                    acmerDB.setScore(calculScore(problemsCount));
+                    return acmerDB;
                 }
-            } else {
-                acmer = getAcmerInfosByHandle(acmer.getHandle());
-                acmer.setScore(calculScore(problemsCount));
-                acmer.setSolvedProblems(size);
             }
+            acmer = getAcmerInfosByHandle(acmer.getHandle());
+            acmer.setScore(calculScore(problemsCount));
+            acmer.setSolvedProblems(size);
+            return acmer;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return acmer;
     }
 
     public void getAllAvailableContests() {
@@ -254,7 +264,6 @@ public class AcmerController {
                 int Listsize = constestNode.size();
                 for (int i = 0; i < Listsize; i++) {
                     JsonNode obj = constestNode.get(i);
-                    System.out.println(obj.toString());
                     Contest contest = new Contest(obj.get("id").asInt(),
                             obj.get("name").toString(),
                             obj.get("type").toString(),
@@ -263,7 +272,6 @@ public class AcmerController {
                             obj.get("durationSeconds").asLong(),
                             obj.get("startTimeSeconds").asLong(),
                             obj.get("relativeTimeSeconds").asLong());
-                    System.out.println(contest.toString());
                     contests.put(obj.get("id").asInt(), contest);
                 }
             } catch (Exception e) {
