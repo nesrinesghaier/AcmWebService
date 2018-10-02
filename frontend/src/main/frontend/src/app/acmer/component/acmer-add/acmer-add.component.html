@@ -1,0 +1,48 @@
+<div class="container">
+    <section>
+      <header class="header">
+        <div class="row">
+          <div class="col-md-5" style="margin-top: 5%; margin-left: 42%">
+            <h2>Add Acmer</h2>
+          </div>
+        </div>
+
+      </header>
+    </section>
+    <section class="main" style="margin-left: 30%;margin-right: 30%" >
+      <form class="panel" name="form">
+
+        <div class="form-group">
+          <label for="handle">Handle :</label>
+          <input [(ngModel)]="handle" placeholder="Handle" name="handle" class="form-control" autocomplete="on" id="handle" required minlength="1">
+        </div>
+        <div class="form-group">
+          <label for="firstName">First Name :</label>
+          <input [(ngModel)]="firstName" placeholder="First Name" name="handle" class="form-control" autocomplete="on" id="firstName">
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name :</label>
+          <input [(ngModel)]="lastName" placeholder="Last Name" name="handle" class="form-control" autocomplete="on" id="lastName">
+        </div>
+        <div class="form-group">
+          <label for="email">Email :</label>
+          <input type="email" [(ngModel)]="email" placeholder="Email" name="handle" class="form-control" autocomplete="on" id="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password :</label>
+          <input  pattern="[0-9]{8}" type="password" [(ngModel)]="password" placeholder="Password" name="handle" class="form-control" autocomplete="on" id="password" minlength="8" maxlength="8">
+        </div>
+        <div *ngIf="!password.match('^[0-9]{8}$') && password!=''">
+          password must be a phone number.
+        </div>
+        <button style="background-color:#8C251D; border-color:#8C251D;margin-right: 20px" class="btn btn-success "
+                (click)="createAcmer()">Add
+        </button>
+
+        <button style="background-color:darkcyan; border-color:darkcyan " class="btn btn-success "
+                (click)="listRefresh()">Add more
+        </button>
+      </form>
+    </section>
+</div>
+

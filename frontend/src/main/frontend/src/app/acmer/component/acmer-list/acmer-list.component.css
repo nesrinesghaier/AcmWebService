@@ -1,0 +1,46 @@
+.tag {
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  display: inline-block;
+}
+
+.tag-default {
+  background-color: gray;
+}
+
+.tag-success {
+  background-color: green;
+}
+
+.tag-warning {
+  background-color: orange;
+}
+
+.tag-danger {
+  background-color: red;
+}
+ .button,btn{
+   background-color: #d9534f;
+   border-color: #d9534f;
+ }
+.inputfile  {
+  cursor: pointer;
+
+}
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+td,th{
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table{
+  margin-top: 20px;
+  font-family: 'Cuprum', sans-serif !important;
+}
+.delete{
+  margin-right: 20px;
+}

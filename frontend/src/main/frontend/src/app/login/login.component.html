@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <div class="col-md-4 col-md-offset-4">
+
+    <div style="margin-top: 18% ;border-color: #17a2b8" class="panel panel-primary">
+
+      <div class="panel-heading" style="background-color: #17a2b8">Authentification</div>
+      <div class="panel-body" >
+        <form #f="ngForm" (ngSubmit)="onLogin(handle,password)">
+          <div class="form-group">
+            <label class="control-label">Handle:</label>
+            <input [(ngModel)]="handle" class="form-control" type="text" name="handle" required>
+          </div>
+          <div class="form-group">
+            <label class="control-label">Password:</label>
+            <input [(ngModel)]="password"  class="form-control" type="password" name="password" required>
+          </div>
+          <button type="submit" class="btn btn-danger">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <div  style="margin-top: 20px" class=" alert alert-danger" *ngIf="mode==1">
+      Wrong Credentials
+    </div>
+  </div>

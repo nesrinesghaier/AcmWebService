@@ -1,0 +1,51 @@
+<div class="mat-elevation-z8">
+  <div class="col-md-4">
+    <h1>Acmers</h1>
+  </div>
+  <table mat-table #table [dataSource]="dataSource" matSort aria-label="Elements" >
+    <!-- Id Column -->
+    <ng-container matColumnDef="firstName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>First Name<</th>
+      <td mat-cell *matCellDef="let row">{{row.firstName}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="lastName">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Last Name</th>
+      <td mat-cell *matCellDef="let row">{{row.lastName}}</td>
+    </ng-container>
+    <!-- Name Column -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+      <td mat-cell *matCellDef="let row">{{row.email}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="handle">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>handle</th>
+      <td mat-cell *matCellDef="let row">{{row.handle}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="solvedProblems">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Solved Problems</th>
+      <td mat-cell *matCellDef="let row">{{row.solvedProblems}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="rank">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Rank</th>
+      <td mat-cell *matCellDef="let row">{{row.rank}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="Action">
+      <th mat-header-cell *matHeaderCellDef >Action</th>
+      <td><button mat-button="test">Test</button>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator #paginator
+    [pageIndex]="0"
+    [pageSize]="50"
+    [pageSizeOptions]="[5, 10, 50, 100]">
+  </mat-paginator>
+</div>

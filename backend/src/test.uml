@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="242.0" y="339.0">com.eniso.acmwebservice.Controller.AcmerController</node>
+    <node x="0.0" y="568.0">com.eniso.acmwebservice.Dao.AcmerDao</node>
+    <node x="124.0" y="687.0">com.eniso.acmwebservice.AcmwebserviceApplication</node>
+    <node x="285.0" y="568.0">com.eniso.acmwebservice.Entity.AcmerWrapper</node>
+    <node x="0.0" y="339.0">com.eniso.acmwebservice.Entity.Problem</node>
+    <node x="0.0" y="687.0">com.eniso.acmwebservice.Entity.Role</node>
+    <node x="0.0" y="0.0">com.eniso.acmwebservice.Entity.Result</node>
+    <node x="276.0" y="0.0">com.eniso.acmwebservice.Entity.Acmer</node>
+    <node x="502.0" y="568.0">com.eniso.acmwebservice.Entity.JsonResult</node>
+    <node x="493.0" y="0.0">com.eniso.acmwebservice.Entity.Author</node>
+  </nodes>
+  <notes />
+  <edges />
+  <settings layout="Hierarchic Group" zoom="0.8" x="471.5" y="1131.125" />
+  <SelectedNodes>
+    <node>com.eniso.acmwebservice.Dao.AcmerDao</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

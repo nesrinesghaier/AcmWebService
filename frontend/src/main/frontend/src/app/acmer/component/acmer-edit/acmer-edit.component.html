@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="col-md-6">
+    <h2 class="text-center">Add Acmer</h2>
+    <div class="form-group">
+      <label class="label">First Name :</label>
+      <input class="form-control" type="text" [(ngModel)]="acmer.firstName">
+    </div>
+
+    <div class="form-group">
+      <label class="label">Last Name :</label>
+      <input class="form-control" type="text" [(ngModel)]="acmer.lastName==null ? empty: acmer.lastName">
+    </div>
+    <div class="form-group">
+      <label for="email" class="label">Email :</label>
+      <input class="form-control" type="email" [(ngModel)]="acmer.email" id="email">
+    </div>
+    <button style="background-color:#8C251D; border-color:#8C251D " class="btn btn-success "
+            (click)="editAcmer()">Submit change
+    </button>
+  </div>
+</div>

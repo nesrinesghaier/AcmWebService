@@ -1,0 +1,103 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<div class="mat-elevation-z8">
+
+  <div class="acmer">
+    <div class="col">
+      <section>
+        <header class="header">
+          <div class="acmer">
+            <div class="col-md-4">
+              <h1>Acmers</h1>
+            </div>
+
+          </div>
+
+        </header>
+      </section>
+
+      <section>
+
+        <table class="table">
+          <thead>
+          <tr>
+            <th></th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Handle</th>
+            <th>Pproblems solved</th>
+            <th>Score</th>
+            <th></th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr
+            *ngFor="let acmer of acmers; let i=index">
+            <td>{{i+1}}</td>
+            <td> {{acmer.firstName ? acmer.firstName : empty}}</td>
+            <td>{{acmer.lastName ? acmer.lastName : empty}}</td>
+            <td>{{acmer.email ? acmer.email : empty}}</td>
+            <td>{{acmer.handle}}</td>
+            <td>{{acmer.solvedProblems}}</td>
+            <td style="text-align: center">{{acmer.score}}</td>
+            <td></td>
+            <td>
+              <button *ngIf="loggedInAcmer!=acmer.handle && adminPrevilege" class="delete btn btn-danger"
+                      (click)="deleteAcmer(acmer)">Delete
+              </button>
+
+              <a *ngIf="loggedInAcmer==acmer.handle || adminPrevilege" class="btn btn-info"
+                 [routerLink]="['/acmers/edit', acmer.handle]"
+                 style="background-color:#17a2b8;float:inside !important;"> Edit</a>
+          </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+</div>
+
+
+<footer class="modal-footer">
+
+
+  <div class="col-md-9">
+    <button type="button" style="margin-right:50px;background-color:#17a2b8;border-color:#17a2b8" class="button btn"
+            (click)='refreshPage()'>refresh
+    </button>
+    <button type="button" style="margin-right:40px;background-color:#d9534f;border-color:#d9534f" class="button btn"
+            (click)='deleteAcmers()'>Delete All
+    </button>
+  </div>
+  <span class="btn btn-default btn-file">
+  <input class="inputfile" type="file" #fileInput multiple (change)="addToQueue()"/>
+    </span>
+
+  <table cellspacing="5">
+    <tr *ngFor="let item of queue | async">
+      <td>{{ item?.file?.name }}</td>
+      <td></td>
+      <td class="text-right">{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+      <td>{{ item.progress + ' %' }}</td>
+      <td>
+        <span *ngIf="item.isPending()" class="tag tag-default"></span>
+        <span *ngIf="item.isSuccess()" class="tag tag-success"></span>
+        <span *ngIf="item.inProgress()" class="tag tag-warning"></span>
+        <span *ngIf="item.isError()" class="tag tag-danger"></span>
+      </td>
+      <td class="text-left">
+        <a tooltip="Upload file" (click)="item.upload()" *ngIf="item.isUploadable()">
+          <i class="fa fa-upload fa-2x"></i>
+        </a>
+        <a tooltip="Cancel upload" (click)="item.cancel()" *ngIf="item.inProgress()">
+          <i class="fa fa-times-circle fa-2x"></i>
+        </a>
+        <a tooltip="Remove from queue" (click)="item.remove()" *ngIf="!item.inProgress()">
+          <i class="fa fa-trash fa-2x"></i>
+        </a>
+      </td>
+    </tr>
+  </table>
+</footer>
