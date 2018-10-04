@@ -35,10 +35,13 @@ export class AcmerListComponent implements OnInit  {
   queue: Observable<FileQueueObject[]>;
   completeItem = (item: FileQueueObject, response: any) => {
     this.onCompleteItem.emit({item, response});
-  }
+  };
 
   constructor(private acmerService: AcmerService, private router: Router, private route: ActivatedRoute) {
-    this.loggedInAcmer = (localStorage.getItem('handle') == null) ? "" : localStorage.getItem('handle');
+    if (localStorage.getItem('handle')==null){
+      this.router.navigate(['login']);
+    }
+    this.loggedInAcmer = localStorage.getItem('handle');
     this.adminPrevilege = localStorage.getItem('role') == "ADMIN";
   }
 
@@ -62,9 +65,7 @@ export class AcmerListComponent implements OnInit  {
   };
 
   ngOnInit() {
-    console.log(this.loggedInAcmer);
     this.acmerService.getAllAcmers().subscribe(data => {
-      console.log(data);
       this.acmers = data;
     }, error => console.log(error));
     this.queue = this.acmerService.queue;

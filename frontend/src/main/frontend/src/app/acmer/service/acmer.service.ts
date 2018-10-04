@@ -69,30 +69,54 @@ export class AcmerService {
 
   getAllAcmers() {
     let jwt = localStorage.getItem('token');
-    return this.http.get<Acmer[]>(this.apiUrl, {headers : new HttpHeaders().set('X-Auth-Token', jwt)});
+    const httpOptions = {
+      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
+    };
+    return this.http.get<Acmer[]>(this.apiUrl, httpOptions);
   }
 
   getAcmerByHandle(handle: string) {
-    return this.http.get(this.apiUrl + '/' + handle);
+    let jwt = localStorage.getItem('token');
+    const httpOptions = {
+      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
+    };
+    return this.http.get(this.apiUrl + '/' + handle, httpOptions);
   }
 
   createAcmer(json: string) {
+    let jwt = localStorage.getItem('token');
     const httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json'})
+      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
     };
     return this.http.post<string>(this.apiUrl + '/create', json, httpOptions);
   }
 
   deleteAcmer(acmer: Acmer) {
-    return this.http.delete(this.apiUrl + '/' + acmer.handle);
+    let jwt = localStorage.getItem('token');
+    const httpOptions = {
+      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
+    };
+    return this.http.delete(this.apiUrl + '/' + acmer.handle, httpOptions);
   }
 
   updateAcmer(acmer: Acmer): Observable<Object> {
-    return this.http.put<Acmer>(this.apiUrl , acmer);
+    let jwt = localStorage.getItem('token');
+    const httpOptions = {
+      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
+    };
+    return this.http.put<Acmer>(this.apiUrl, acmer, httpOptions);
   }
 
   deleteAllAcmers() {
-    return this.http.delete(this.apiUrl + '/deleteAll', {responseType: 'text'});
+    let jwt = localStorage.getItem('token');
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': jwt,
+        'Accept': 'application/json, text/plain, */*'
+      })
+    };
+    return this.http.delete(this.apiUrl + '/deleteAll', httpOptions);
   }
 
   // public events

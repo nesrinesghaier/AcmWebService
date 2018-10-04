@@ -129,7 +129,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.2</version>
+                <version>3.8.0</version>
                 <configuration>
                     <executable>C:\Program Files\Java\jdk1.8</executable>
                 </configuration>
@@ -144,6 +144,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.2</version>
                 <configuration>
                     <packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
                     <warName>frontend</warName>

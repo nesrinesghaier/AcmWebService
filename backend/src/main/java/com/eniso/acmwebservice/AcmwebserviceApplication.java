@@ -13,7 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import javax.annotation.Resource;
 
-//@EnableWebMvc
 @SpringBootApplication(exclude = RepositoryRestMvcAutoConfiguration.class)
 @EnableJpaRepositories("com.eniso.acmwebservice.Dao")
 public class AcmwebserviceApplication implements CommandLineRunner {

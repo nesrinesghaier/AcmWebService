@@ -10,12 +10,6 @@ public class SubmissionWrapper {
     @JsonProperty
     private List<Submission> result;
 
-
-   /* public SubmissionWrapper(String status, List<Submission> result) {
-        this.status = status;
-        this.result = result;
-    }*/
-
     public List<Submission> getResult() {
         return result;
     }

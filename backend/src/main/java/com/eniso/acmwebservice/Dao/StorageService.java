@@ -17,13 +17,14 @@ import java.nio.file.Paths;
 @Service
 public class StorageService {
 
-    private final Path rootLocation = Paths.get("upload-dir");
-    Logger log = LoggerFactory.getLogger(this.getClass().getName());
+    private Path rootLocation = Paths.get("upload-dir");
+    private Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     public void store(MultipartFile file) {
         try {
             Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
         } catch (Exception e) {
+            logger.error("Error in copying file!");
             throw new RuntimeException("FAIL!");
         }
     }
@@ -35,14 +36,14 @@ public class StorageService {
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
+                logger.error("Error in loading file!");
                 throw new RuntimeException("FAIL!");
             }
         } catch (MalformedURLException e) {
+            logger.error("Error in loading file!");
             throw new RuntimeException("FAIL!");
         }
     }
-
-
 
 
     public void deleteAll() {
@@ -53,6 +54,7 @@ public class StorageService {
         try {
             Files.createDirectory(rootLocation);
         } catch (IOException e) {
+            logger.error("Could not initialize storage!");
             throw new RuntimeException("Could not initialize storage!");
         }
     }

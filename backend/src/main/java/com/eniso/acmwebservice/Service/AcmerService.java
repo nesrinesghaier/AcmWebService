@@ -3,33 +3,37 @@ package com.eniso.acmwebservice.Service;
 import com.eniso.acmwebservice.Dao.AcmerDAO;
 import com.eniso.acmwebservice.Dao.AcmerRepository;
 import com.eniso.acmwebservice.Entity.*;
-import com.eniso.acmwebservice.Security.JwtTokenProvider;
-import com.eniso.acmwebservice.Security.PasswordEncryption;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.*;
 
-@Service
+@Service(value = "acmerService")
 @Transactional
-public class AcmerService {
+public class AcmerService implements UserDetailsService {
 
+    @Autowired
+    AcmerRepository acmerRepository;
 
     @Autowired
-    private AcmerRepository acmerRepository;
-    @Autowired
-    private PasswordEncryption passwordEncryption;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private AcmerDAO acmerDAO = new AcmerDAO();
 
-    public Acmer findByHandle(String handle) throws IOException {
+    public Acmer findByHandle(String handle) {
         Acmer acmer = acmerRepository.findByHandle(handle);
         if (acmer == null) {
             return getAcmerInfosByHandle(handle);
@@ -144,7 +148,6 @@ public class AcmerService {
             String lastName = rootNode.path("lastName").asText();
             String email = rootNode.path("email").asText();
             Optional<Acmer> acmerObj = acmerRepository.findById(handle);
-            System.out.println(handle);
             if (acmerObj.isPresent()) {
                 return false;
             }
@@ -152,30 +155,45 @@ public class AcmerService {
             acmer.setFirstName(firstName);
             acmer.setLastName(lastName);
             acmer.setEmail(email);
-            String salt = this.passwordEncryption.generateSalt();
-            String encryptedPassword = this.passwordEncryption.getEncryptedPassword(password, salt);
+            String encryptedPassword = this.bCryptPasswordEncoder.encode(password);
             acmer.setPassword(encryptedPassword);
-            acmer.setSalt(salt);
             acmer.setCountry("Tunisia");
             acmerRepository.save(acmer);
-            Map<Integer, Contest> contests = acmerDAO.getAllAvailableContests();
-            updateAcmerScore(acmer, contests);
+            //Map<Integer, Contest> contests = acmerDAO.getAllAvailableContests();
+            //updateAcmerScore(acmer, contests);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return true;
     }
 
-    public void createAll(List<Acmer> acmerList) {
-        Map<Integer, Contest> contests = acmerDAO.getAllAvailableContests();
-        for (Acmer acmer : acmerList) {
-            String handle = acmer.getHandle();
-            String password = acmer.getPassword();
-            acmer = getAcmerInfosByHandle(handle);
-            acmer.setPassword(password);
-            acmerRepository.save(acmer);
-            updateAcmerScore(acmer, contests);
+    public boolean createAll(MultipartFile file) {
+        try {
+            InputStreamReader reader = new InputStreamReader(file.getInputStream());
+            BufferedReader br = new BufferedReader(reader);
+            StringBuilder sb = new StringBuilder();
+            while (br.ready()) {
+                sb.append(br.readLine());
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            TypeFactory factory = mapper.getTypeFactory();
+            CollectionType listType = factory.constructCollectionType(List.class, Acmer.class);
+            List<Acmer> acmerList = mapper.readValue(sb.toString(), listType);
+
+            Map<Integer, Contest> contests = acmerDAO.getAllAvailableContests();
+            for (Acmer acmer : acmerList) {
+                String handle = acmer.getHandle();
+                String password = acmer.getPassword();
+                acmer = getAcmerInfosByHandle(handle);
+                acmer.setPassword(password);
+                acmerRepository.save(acmer);
+                updateAcmerScore(acmer, contests);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
+        return true;
     }
 
     private int calculScore(Map<String, Integer> problemsCount) {
@@ -197,37 +215,29 @@ public class AcmerService {
         return score;
     }
 
-  /*  @Bean
-    public SmartInitializingSingleton importProcessor() {
-        return () -> {
-            this.updateAcmersScore();
-        };
-
-    }*/
-
-    public Acmer login(String acmerData) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(acmerData);
-            String handle = rootNode.path("handle").asText();
-            String password = rootNode.path("password").asText();
-            Acmer acmerfromDB = acmerRepository.findByHandle(handle);
-            System.out.println("from db"+acmerfromDB.toString());
-            if (acmerfromDB != null) {
-                String encryptedPassword = passwordEncryption.getEncryptedPassword(password, acmerfromDB.getSalt());
-                //System.out.println(encryptedPassword);
-                //System.out.println(acmerfromDB.getPassword());
-                if (encryptedPassword.equals(acmerfromDB.getPassword())) {
-                    String token = jwtTokenProvider.createToken(handle, Collections.singletonList(acmerfromDB.getRole()));
-                    acmerfromDB.setToken(token);
-                    System.out.println("***"+acmerfromDB.toString());
-                    return acmerfromDB;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Acmer acmer = acmerRepository.findByHandle(username);
+        if (acmer == null) {
+            throw new UsernameNotFoundException("Invalid username or password.");
         }
-        return new Acmer();
+        return new org.springframework.security.core.userdetails.User(acmer.getUsername(), acmer.getPassword(), acmer.getAuthorities());
+    }
+
+    public void populateAdmins() {
+        if (acmerRepository.findByHandle("bacali") == null) {
+            Acmer acmer = getAcmerInfosByHandle("bacali");
+            acmer.setPassword(this.bCryptPasswordEncoder.encode("95253834"));
+            acmerRepository.save(acmer);
+        }
+        if (acmerRepository.findByHandle("myob-_-") == null) {
+            Acmer acmer = getAcmerInfosByHandle("myob-_-");
+            acmer.setFirstName("Nesrine");
+            acmer.setLastName("Sghaier");
+            acmer.setEmail("nesrinesghaier10@gmail.com");
+            acmer.setPassword(this.bCryptPasswordEncoder.encode("50609713"));
+            acmerRepository.save(acmer);
+        }
     }
 }
 

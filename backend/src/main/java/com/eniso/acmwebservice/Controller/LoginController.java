@@ -1,41 +1,50 @@
 package com.eniso.acmwebservice.Controller;
 
 import com.eniso.acmwebservice.Entity.Acmer;
+import com.eniso.acmwebservice.Security.JwtTokenUtil;
 import com.eniso.acmwebservice.Service.AcmerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class LoginController {
+
+    private final AcmerService acmerService;
+
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtTokenUtil jwtTokenUtil;
+
     @Autowired
-    private AcmerService acmerService;
-
-    @PostMapping("/login")
-    public ResponseEntity<Acmer> login(@RequestBody String acmerData) {
-        Acmer loggedAcmer = acmerService.login(acmerData);
-        if (loggedAcmer.getHandle() == null) {
-            System.out.println(loggedAcmer.toString());
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        return new ResponseEntity<>(loggedAcmer, HttpStatus.OK);
+    public LoginController(AcmerService acmerService, AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil) {
+        this.acmerService = acmerService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
     }
 
-    @GetMapping("/logout")
-    public String logoutPage (HttpServletRequest request, HttpServletResponse response) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
-            new SecurityContextLogoutHandler().logout(request, response, auth);
-        }
-        return "ok";//You can redirect wherever you want, but generally it's a good practice to show login screen again.
+    @PostMapping(value = "/login")
+    public ResponseEntity<Acmer> login(@RequestBody Acmer loginUser) {
+        final Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginUser.getUsername(),
+                        loginUser.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Acmer acmer = acmerService.findByHandle(loginUser.getUsername());
+        String token = jwtTokenUtil.generateToken(acmer);
+        acmer.setToken(token);
+        acmerService.updateAcmer(acmer);
+        acmer.setPassword("****");
+        return new ResponseEntity<>(acmer, HttpStatus.OK);
     }
+
 }

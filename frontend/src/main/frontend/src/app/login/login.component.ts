@@ -16,22 +16,18 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    if ( localStorage.getItem('loggedIn')!=null){
+    if (localStorage.getItem('loggedIn') != null) {
       this.router.navigate(['acmers']);
     }
   }
 
   onLogin(handle, password) {
-    console.log(handle);
-    console.log(password);
     this.authService.login(handle, password).subscribe(resp => {
       let jwt = resp['token'];
       let username = resp['handle'];
       let role = resp['role'];
-      console.log(jwt);
-      console.log(JSON.stringify(resp));
       this.mode = 0;
-      localStorage.setItem('token', jwt);
+      localStorage.setItem('token', 'Bearer ' + jwt);
       localStorage.setItem('handle', username);
       localStorage.setItem('role', role.toString());
       localStorage.setItem('loggedIn', 'true');

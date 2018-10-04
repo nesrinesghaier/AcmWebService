@@ -1,14 +1,15 @@
 package com.eniso.acmwebservice.Entity;
 
 public class Contest {
-private int id;
-private String name;
-private String type;
-private String phase;
-private boolean frozen;
-private long durationSeconds;
-private long startTimeSeconds;
-private long relativeTimeSeconds;
+
+    private int id;
+    private String name;
+    private String type;
+    private String phase;
+    private boolean frozen;
+    private long durationSeconds;
+    private long startTimeSeconds;
+    private long relativeTimeSeconds;
 
     public Contest(int id, String name, String type, String phase, boolean frozen, long durationSeconds, long startTimeSeconds, long relativeTimeSeconds) {
         this.id = id;

@@ -37,7 +37,6 @@ export class AcmerEditComponent implements OnInit {
       this.handle = params.handle;
     });
     this.acmerService.getAcmerByHandle(this.handle).subscribe(acmer=>{
-      console.log(JSON.stringify(acmer));
       this.acmer.handle = acmer['handle']==null?"":acmer['handle'];
       this.acmer.firstName = acmer['firstName']==null?"":acmer['firstName'];
       this.acmer.lastName= acmer['lastName']==null?"":acmer['lastName'];

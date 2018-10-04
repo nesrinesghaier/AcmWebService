@@ -34,25 +34,19 @@ public class Acmer implements Serializable, UserDetails {
     @Nullable
     @Column(name = "maxRank")
     private String maxRank;
-    @Nullable
     @Column(name = "rating")
     private int rating;
-    @Nullable
     @Column(name = "maxRating")
     private int maxRating;
-    @Nullable
     @Column(name = "solvedProblems")
     private int solvedProblems;
-    @Nullable
     @Column(name = "score")
     private int score;
+    @Nullable
+    @Column(name = "token", unique = true)
+    private String token;
     @Column(name = "password", unique = true)
     private String password;
-    @Column(name = "token", unique = true)
-    @Nullable
-    private String token;
-    @Column(name = "salt", unique = true)
-    private String salt;
     @Enumerated(EnumType.STRING)
     private Role role;
     @Nullable
@@ -223,14 +217,6 @@ public class Acmer implements Serializable, UserDetails {
         this.token = token;
     }
 
-    public String getSalt() {
-        return salt;
-    }
-
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         GrantedAuthority auth = () -> getRole().getAuthority();
@@ -252,7 +238,6 @@ public class Acmer implements Serializable, UserDetails {
                 ", solvedProblems=" + solvedProblems +
                 ", score=" + score +
                 ", password=" + password +
-                ", salt= "+salt+
                 ", token= "+token+
                 ", role=" + role +
                 '}';

@@ -26,10 +26,8 @@ export class AppComponent {
 
   constructor(private _loadingBar: SlimLoadingBarService, private _router: Router, public acmerService: AuthenticationService) {
     this.loggedIn = localStorage.getItem('loggedIn') != null;
-    console.log(localStorage.getItem('role'));
     this.adminPrevilege = localStorage.getItem('role') == "ADMIN";
     this.handle = (localStorage.getItem('handle') == null) ? "" : localStorage.getItem('handle');
-    console.log(this.loggedIn);
     this._router.events.subscribe((event: Event) => {
       this.navigationInterceptor(event);
     });
