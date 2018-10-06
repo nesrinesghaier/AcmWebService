@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = req.getServletPath();
         String username = null;
         String authToken = null;
-        if (header!=null){
+        if (header != null) {
             if (header.startsWith(TOKEN_PREFIX)) {
                 authToken = header.replace(TOKEN_PREFIX, "");
                 try {
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 } catch (SignatureException e) {
                     logger.error("Authentication Failed. Username or Password not valid.");
                 }
-            } else if(header.startsWith("/api/")){
+            } else if (path.startsWith("/api/")) {
                 logger.warn("couldn't find bearer string, will ignore the header");
             }
         }

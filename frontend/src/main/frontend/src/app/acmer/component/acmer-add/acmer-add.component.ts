@@ -14,44 +14,20 @@ import alertIsPresent = until.alertIsPresent;
   styleUrls: ['./acmer-add.component.css']
 })
 export class AcmerAddComponent {
-  handle: string = "";
-  firstName: string = "";
-  lastName: string = "";
-  email: string = "";
-  password: string = "";
+  public acmer: Acmer = new Acmer();
 
   constructor(private router: Router, private acmerService: AcmerService) {
+    console.log(localStorage.getItem('role'));
+    if (localStorage.getItem('role') != "ADMIN") {
+      router.navigate(['/acmers']);
+    }
   }
 
   createAcmer(): void {
-    if (this.handle != "" && this.password.match('^[0-9]{8}$') )  {
-      let postMessage = JSON.stringify({
-        'handle': this.handle,
-        'firstName':this.firstName,
-        'lastName':this.firstName,
-        'email':this.email,
-        'password': this.password
-      });
-      this.acmerService.createAcmer(postMessage).subscribe(data => {
-        alert("Acmer created successfully");
-        this.router.navigate(['acmers']);
-      });
-    }
-
-
-  };
-
-  listRefresh():void{
-    let postMessage = JSON.stringify({
-      'handle': this.handle,
-      'firstName':this.firstName,
-      'lastName':this.firstName,
-      'email':this.email,
-      'password': this.password
+    this.acmerService.createAcmer(this.acmer).subscribe(data => {
+      alert("Acmer created successfully");
+      this.router.navigate(['acmers']);
     });
-    this.acmerService.createAcmer(postMessage).subscribe(data => {
-    });
-    window.location.reload();
   }
 
 }

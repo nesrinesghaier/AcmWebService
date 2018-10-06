@@ -11,12 +11,21 @@
 
 <div id='cssmenu'>
   <ul>
-    <li *ngIf="!loggedIn"><a class='active' routerLink="/login">Login</a></li>
-    <li *ngIf="adminPrevilege==true && loggedIn" >
-      <a class='active' routerLink="/acmers/create" routerLinkActive="active">Add</a>
+    <li *ngIf="!loggedIn">
+      <a class='active' routerLink="/login">
+        Login
+      </a>
+    </li>
+    <li *ngIf="!loggedIn">
+      <a class='active' routerLink="/register">
+        Register
+      </a>
     </li>
     <li *ngIf="loggedIn">
       <a routerLink="/acmers" routerLinkActive="active">Acmers</a>
+    </li>
+    <li *ngIf="adminPrevilege && loggedIn">
+      <a class='active' routerLink="/acmers/create" routerLinkActive="active">Add</a>
     </li>
     <li class="name" *ngIf="loggedIn" [routerLink]="['acmers/details', handle]">
       <a>Hello {{handle}} !</a>

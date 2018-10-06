@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from "./service/authentication.service";
+import {AuthenticationService} from "../service/authentication.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -35,8 +35,6 @@ export class LoginComponent implements OnInit {
       window.location.reload(true);
     }, error => {
       this.mode = 1;
-
     });
-
   }
 }

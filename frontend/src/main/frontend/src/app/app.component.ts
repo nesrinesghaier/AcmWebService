@@ -10,7 +10,7 @@ import {
   Router
 } from '@angular/router';
 import {AcmerService} from "./acmer/service/acmer.service";
-import {AuthenticationService} from "./login/service/authentication.service";
+import {AuthenticationService} from "./Authentication/service/authentication.service";
 import {LocaleDataIndex} from "@angular/common/src/i18n/locale_data";
 
 @Component({

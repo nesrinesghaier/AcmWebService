@@ -1,5 +1,6 @@
-package com.eniso.acmwebservice;
+package com.eniso.acmwebservice.Config;
 
+import com.eniso.acmwebservice.AcmwebserviceApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 

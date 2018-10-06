@@ -1,36 +1,38 @@
 package com.eniso.acmwebservice.Controller;
 
-import com.eniso.acmwebservice.Dao.StorageService;
 import com.eniso.acmwebservice.Entity.Acmer;
+import com.eniso.acmwebservice.Entity.Constants;
 import com.eniso.acmwebservice.Service.AcmerService;
+import com.eniso.acmwebservice.Service.AsynchronousService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+
+import static com.eniso.acmwebservice.Entity.Constants.HEADER_STRING;
 
 @RestController
 @RequestMapping("/api/acmers")
 @CrossOrigin(origins = "*")
 public class AcmerController {
 
-    private final StorageService storageService;
-
-    private final AcmerService acmerService;
-
-    private static final Logger logger = LoggerFactory.getLogger(AcmerController.class);
+    @Autowired
+    AcmerService acmerService;
 
     @Autowired
-    public AcmerController(StorageService storageService, AcmerService acmerService) {
-        this.storageService = storageService;
-        this.acmerService = acmerService;
-    }
+    AsynchronousService asynchronousService;
+
+    private static final Logger logger = LoggerFactory.getLogger(AcmerController.class);
 
     @GetMapping(value = "")
     public ResponseEntity<Collection<Acmer>> getAllAcmer() {
@@ -39,10 +41,23 @@ public class AcmerController {
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/create")
+    public ResponseEntity<Void> createAcmer(@RequestBody Acmer acmerData) {
+        boolean bool = acmerService.createAcmer(acmerData);
+        if (!bool) {
+            logger.error("Error in adding Acmer!");
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        asynchronousService.refreshAcmerData(acmerService.findByHandle(acmerData.getHandle()));
+        logger.info("Adding Acmer successfully.");
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
     @PostMapping("/createAll")
     public ResponseEntity<Void> createAll(MultipartHttpServletRequest request) {
-        boolean test = acmerService.createAll(request.getFile(request.getFileNames().next()));
-        if (test) {
+        String token = request.getHeader(HEADER_STRING);
+        boolean test = acmerService.createAll(request.getFile(request.getFileNames().next()), token);
+        if (!test) {
             logger.error("Error in adding Acmers!");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -50,27 +65,22 @@ public class AcmerController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<Void> createAcmer(@RequestBody String acmerData) {
-        boolean bool = acmerService.createAcmer(acmerData);
-        if (!bool) {
-            logger.error("Error in adding Acmer!");
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-        logger.info("Adding Acmer successfully.");
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
     @DeleteMapping("/{handle:.+}")
     public ResponseEntity<Collection<Acmer>> deleteAcmer(@PathVariable("handle") String handle) {
-        List<Acmer> acmerList = new ArrayList<>(acmerService.deleteAcmer(handle));
-        logger.info("Deleting Acmer successfully.");
+        boolean bool = acmerService.deleteAcmer(handle);
+        List<Acmer> acmerList = acmerService.findAllAcmers();
+        if (!bool) {
+            logger.warn("Cannot delete an ADMIN");
+            return new ResponseEntity<>(acmerList, HttpStatus.FORBIDDEN);
+        }
+        logger.info("Acmer deleted successfully.");
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteAll")
     public ResponseEntity<Collection<Acmer>> deleteAllAcmers() {
-        List<Acmer> acmerList = new ArrayList<>(acmerService.deleteAllAcmers());
+        acmerService.deleteAllAcmers();
+        List<Acmer> acmerList = acmerService.findAllAcmers();
         logger.info("Deleting all Acmers successfully.");
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }

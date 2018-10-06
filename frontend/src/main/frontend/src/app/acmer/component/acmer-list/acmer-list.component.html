@@ -8,16 +8,12 @@
         <header class="header">
           <div class="acmer">
             <div class="col-md-4">
-              <h1>Acmers</h1>
+              <h1>Acmers List</h1>
             </div>
-
           </div>
-
         </header>
       </section>
-
       <section>
-
         <table class="table">
           <thead>
           <tr>
@@ -26,7 +22,7 @@
             <th>Last Name</th>
             <th>Email</th>
             <th>Handle</th>
-            <th>Pproblems solved</th>
+            <th>Problems solved</th>
             <th>Score</th>
             <th></th>
             <th>Action</th>
@@ -47,7 +43,6 @@
               <button *ngIf="loggedInAcmer!=acmer.handle && adminPrevilege" class="delete btn btn-danger"
                       (click)="deleteAcmer(acmer)">Delete
               </button>
-
               <a *ngIf="loggedInAcmer==acmer.handle || adminPrevilege" class="btn btn-info"
                  [routerLink]="['/acmers/edit', acmer.handle]"
                  style="background-color:#17a2b8;float:inside !important;"> Edit</a>
@@ -64,40 +59,36 @@
 
 
   <div class="col-md-9">
-    <button type="button" style="margin-right:50px;background-color:#17a2b8;border-color:#17a2b8" class="button btn"
-            (click)='refreshPage()'>refresh
-    </button>
-    <button type="button" style="margin-right:40px;background-color:#d9534f;border-color:#d9534f" class="button btn"
-            (click)='deleteAcmers()'>Delete All
+    <button type="button" style="background-color:#d9534f;border-color:#d9534f" class="button btn"
+            *ngIf="adminPrevilege" (click)='deleteAcmers()'>Delete All
     </button>
   </div>
+  <div *ngIf="adminPrevilege">
   <span class="btn btn-default btn-file">
   <input class="inputfile" type="file" #fileInput multiple (change)="addToQueue()"/>
     </span>
-
-  <table cellspacing="5">
-    <tr *ngFor="let item of queue | async">
-      <td>{{ item?.file?.name }}</td>
-      <td></td>
-      <td class="text-right">{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
-      <td>{{ item.progress + ' %' }}</td>
-      <td>
-        <span *ngIf="item.isPending()" class="tag tag-default"></span>
-        <span *ngIf="item.isSuccess()" class="tag tag-success"></span>
-        <span *ngIf="item.inProgress()" class="tag tag-warning"></span>
-        <span *ngIf="item.isError()" class="tag tag-danger"></span>
-      </td>
-      <td class="text-left">
-        <a tooltip="Upload file" (click)="item.upload()" *ngIf="item.isUploadable()">
-          <i class="fa fa-upload fa-2x"></i>
-        </a>
-        <a tooltip="Cancel upload" (click)="item.cancel()" *ngIf="item.inProgress()">
-          <i class="fa fa-times-circle fa-2x"></i>
-        </a>
-        <a tooltip="Remove from queue" (click)="item.remove()" *ngIf="!item.inProgress()">
-          <i class="fa fa-trash fa-2x"></i>
-        </a>
-      </td>
-    </tr>
-  </table>
+    <table>
+      <tr *ngFor="let item of queue | async">
+        <td class="text-right">{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+        <td>{{ item.progress + ' %' }}</td>
+        <td>
+          <span *ngIf="item.isPending()" class="tag tag-default"></span>
+          <span *ngIf="item.isSuccess()" class="tag tag-success"></span>
+          <span *ngIf="item.inProgress()" class="tag tag-warning"></span>
+          <span *ngIf="item.isError()" class="tag tag-danger"></span>
+        </td>
+        <td class="text-left">
+          <a tooltip="Upload file" (click)="item.upload()" *ngIf="item.isUploadable()">
+            <i class="fa fa-upload fa-2x"></i>
+          </a>
+          <a tooltip="Cancel upload" (click)="item.cancel()" *ngIf="item.inProgress()">
+            <i class="fa fa-times-circle fa-2x"></i>
+          </a>
+          <a tooltip="Remove from queue" (click)="item.remove()" *ngIf="!item.inProgress()">
+            <i class="fa fa-trash fa-2x"></i>
+          </a>
+        </td>
+      </tr>
+    </table>
+  </div>
 </footer>

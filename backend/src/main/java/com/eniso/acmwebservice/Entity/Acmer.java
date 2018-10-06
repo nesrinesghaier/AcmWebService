@@ -45,7 +45,7 @@ public class Acmer implements Serializable, UserDetails {
     @Nullable
     @Column(name = "token", unique = true)
     private String token;
-    @Column(name = "password", unique = true)
+    @Column(name = "password")
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -226,10 +226,10 @@ public class Acmer implements Serializable, UserDetails {
     @Override
     public String toString() {
         return "Acmer{" +
-                "lastName='" + lastName + '\'' +
-                ", handle='" + handle + '\'' +
-                ", email='" + email + '\'' +
+                "handle='" + handle + '\'' +
                 ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
                 ", country='" + country + '\'' +
                 ", rank='" + rank + '\'' +
                 ", maxRank='" + maxRank + '\'' +
@@ -237,10 +237,10 @@ public class Acmer implements Serializable, UserDetails {
                 ", maxRating=" + maxRating +
                 ", solvedProblems=" + solvedProblems +
                 ", score=" + score +
-                ", password=" + password +
-                ", token= "+token+
+                ", token='" + token + '\'' +
+                ", password='" + password + '\'' +
                 ", role=" + role +
+                ", solvedProblemsDetails='" + solvedProblemsDetails + '\'' +
                 '}';
     }
-
 }

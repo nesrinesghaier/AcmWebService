@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
 import * as _ from 'lodash';
-import {Headers} from "@angular/http";
 import {Acmer} from "../model/Acmer";
-import {Http, Response} from "@angular/http";
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {
-  HttpClient, HttpErrorResponse, HttpEventType, HttpHeaders, HttpRequest,
+  HttpClient,
+  HttpErrorResponse,
+  HttpEventType,
+  HttpHeaders,
+  HttpRequest,
   HttpResponse
 } from "@angular/common/http";
-import {catchError} from "rxjs/internal/operators";
 import {Subscription} from 'rxjs/Subscription';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
@@ -52,13 +52,16 @@ export class AcmerService {
 
   private apiUrl = '/api/acmers';
   private _files: FileQueueObject[] = [];
-  private reqHeader = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'No-Auth': 'True'
-  });
+  private reqHeader: HttpHeaders;
 
   constructor(private http: HttpClient) {
     this._queue = <BehaviorSubject<FileQueueObject[]>>new BehaviorSubject(this._files);
+    let jwt = localStorage.getItem('token');
+    this.reqHeader = new HttpHeaders({
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json',
+      'Authorization': jwt
+    });
   }
 
   private _queue: BehaviorSubject<FileQueueObject[]>;
@@ -68,55 +71,27 @@ export class AcmerService {
   }
 
   getAllAcmers() {
-    let jwt = localStorage.getItem('token');
-    const httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
-    };
-    return this.http.get<Acmer[]>(this.apiUrl, httpOptions);
+    return this.http.get<Acmer[]>(this.apiUrl, {headers: this.reqHeader});
   }
 
   getAcmerByHandle(handle: string) {
-    let jwt = localStorage.getItem('token');
-    const httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
-    };
-    return this.http.get(this.apiUrl + '/' + handle, httpOptions);
+    return this.http.get(this.apiUrl + '/' + handle, {headers: this.reqHeader});
   }
 
-  createAcmer(json: string) {
-    let jwt = localStorage.getItem('token');
-    const httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
-    };
-    return this.http.post<string>(this.apiUrl + '/create', json, httpOptions);
+  createAcmer(acmer: Acmer) {
+    return this.http.post<Acmer>(this.apiUrl + '/create', acmer, {headers: this.reqHeader});
   }
 
   deleteAcmer(acmer: Acmer) {
-    let jwt = localStorage.getItem('token');
-    const httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
-    };
-    return this.http.delete(this.apiUrl + '/' + acmer.handle, httpOptions);
+    return this.http.delete(this.apiUrl + '/' + acmer.handle, {headers: this.reqHeader});
   }
 
   updateAcmer(acmer: Acmer): Observable<Object> {
-    let jwt = localStorage.getItem('token');
-    const httpOptions = {
-      headers: new HttpHeaders({'Content-Type': 'application/json', 'Authorization': jwt})
-    };
-    return this.http.put<Acmer>(this.apiUrl, acmer, httpOptions);
+    return this.http.put<Acmer>(this.apiUrl, acmer, {headers: this.reqHeader});
   }
 
   deleteAllAcmers() {
-    let jwt = localStorage.getItem('token');
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': jwt,
-        'Accept': 'application/json, text/plain, */*'
-      })
-    };
-    return this.http.delete(this.apiUrl + '/deleteAll', httpOptions);
+    return this.http.delete(this.apiUrl + '/deleteAll', {headers: this.reqHeader});
   }
 
   // public events
@@ -171,6 +146,9 @@ export class AcmerService {
     // upload file and report progress
     const req = new HttpRequest('POST', this.apiUrl + '/createAll', form, {
       reportProgress: true,
+      headers: new HttpHeaders({
+        'Authorization': localStorage.getItem('token')
+      })
     });
 
     // upload file and report progress
@@ -206,8 +184,7 @@ export class AcmerService {
 
   private _uploadProgress(queueObj: FileQueueObject, event: any) {
     // update the FileQueueObject with the current progress
-    const progress = Math.round(100 * event.loaded / event.total);
-    queueObj.progress = progress;
+    queueObj.progress = Math.round(100 * event.loaded / event.total);
     queueObj.status = FileQueueStatus.Progress;
     this._queue.next(this._files);
   }
