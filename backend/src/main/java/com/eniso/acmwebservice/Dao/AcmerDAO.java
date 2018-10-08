@@ -6,7 +6,6 @@ import com.eniso.acmwebservice.Entity.Contest;
 import com.eniso.acmwebservice.Entity.SubmissionWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

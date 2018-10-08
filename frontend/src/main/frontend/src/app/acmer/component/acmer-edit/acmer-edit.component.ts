@@ -1,9 +1,8 @@
-import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
-import {ActivatedRoute, NavigationExtras, Router} from "@angular/router";
+import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
 import {AcmerService} from "../../service/acmer.service";
 import {Acmer} from "../../model/Acmer";
-import {FormBuilder, FormGroup, Validators, FormControl, FormArray} from "@angular/forms";
-import {first} from "rxjs/operators";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-acmer-edit',
@@ -34,7 +33,7 @@ export class AcmerEditComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.handle = params.handle;
-      if (localStorage.getItem('role') != 'ADMIN' && localStorage.getItem('handle') != this.handle) {
+      if (sessionStorage.getItem('role') != 'ADMIN' && sessionStorage.getItem('handle') != this.handle) {
         this.router.navigate(['/acmers']);
       }
     });

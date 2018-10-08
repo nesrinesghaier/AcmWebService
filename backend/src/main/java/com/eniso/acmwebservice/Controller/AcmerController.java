@@ -29,15 +29,9 @@ public class AcmerController {
     @Autowired
     AcmerService acmerService;
 
-    @Autowired
-    AsynchronousService asynchronousService;
-
-    private static final Logger logger = LoggerFactory.getLogger(AcmerController.class);
-
     @GetMapping(value = "")
     public ResponseEntity<Collection<Acmer>> getAllAcmer() {
         List<Acmer> acmerList = new ArrayList<>(acmerService.findAllAcmers());
-        logger.info("Get all acmers from DB.");
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }
 
@@ -45,11 +39,9 @@ public class AcmerController {
     public ResponseEntity<Void> createAcmer(@RequestBody Acmer acmerData) {
         boolean bool = acmerService.createAcmer(acmerData);
         if (!bool) {
-            logger.error("Error in adding Acmer!");
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        asynchronousService.refreshAcmerData(acmerService.findByHandle(acmerData.getHandle()));
-        logger.info("Adding Acmer successfully.");
+        acmerService.refreshAcmerData(acmerService.findByHandle(acmerData.getHandle()));
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -58,10 +50,8 @@ public class AcmerController {
         String token = request.getHeader(HEADER_STRING);
         boolean test = acmerService.createAll(request.getFile(request.getFileNames().next()), token);
         if (!test) {
-            logger.error("Error in adding Acmers!");
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        logger.info("Adding Acmers successfully.");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -70,10 +60,8 @@ public class AcmerController {
         boolean bool = acmerService.deleteAcmer(handle);
         List<Acmer> acmerList = acmerService.findAllAcmers();
         if (!bool) {
-            logger.warn("Cannot delete an ADMIN");
             return new ResponseEntity<>(acmerList, HttpStatus.FORBIDDEN);
         }
-        logger.info("Acmer deleted successfully.");
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }
 
@@ -81,7 +69,6 @@ public class AcmerController {
     public ResponseEntity<Collection<Acmer>> deleteAllAcmers() {
         acmerService.deleteAllAcmers();
         List<Acmer> acmerList = acmerService.findAllAcmers();
-        logger.info("Deleting all Acmers successfully.");
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }
 
@@ -89,17 +76,14 @@ public class AcmerController {
     public ResponseEntity<Acmer> findByHandle(@PathVariable String handle) {
         Acmer acmer = acmerService.findByHandle(handle);
         if (acmer == null) {
-            logger.error("Can't find Acmer by handle %s!", handle);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        logger.info("Acmer found by handle %s successfully.", handle);
         return new ResponseEntity<>(acmer, HttpStatus.OK);
     }
 
     @PutMapping(value = "")
     public ResponseEntity<Void> updateAcmer(@RequestBody Acmer acmer) {
         acmerService.updateAcmer(acmer);
-        logger.info("Updating Acmer successfully.");
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

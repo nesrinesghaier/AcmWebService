@@ -18,8 +18,6 @@ public class MainController {
 
     private final AcmerService acmerService;
 
-    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
-
     @Autowired
     public MainController(AcmerService acmerService) {
         this.acmerService = acmerService;
@@ -34,7 +32,6 @@ public class MainController {
     @GetMapping("/populate-admins")
     public ResponseEntity<String> populateAdmins() {
         acmerService.populateAdmins();
-        logger.info("All Admins added successfully");
         return new ResponseEntity<>("DONE", HttpStatus.OK);
     }
 

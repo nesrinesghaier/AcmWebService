@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,6 +39,11 @@ public class AcmerService implements UserDetailsService {
     @Autowired
     JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    private TaskExecutor taskExecutor;
+
+    private static final Logger logger = LoggerFactory.getLogger(AcmerService.class);
+
     private AcmerDAO acmerDAO = new AcmerDAO();
 
     public Acmer findByHandle(String handle) {
@@ -45,14 +51,17 @@ public class AcmerService implements UserDetailsService {
         if (acmer == null) {
             return getAcmerInfosByHandle(handle);
         }
+        logger.info("Acmer found by handle %s successfully.", handle);
         return acmer;
     }
 
     public List<Acmer> findAllAcmers() {
+        logger.info("Get all acmers from DB.");
         return new ArrayList<>(acmerRepository.findAllAcmers());
     }
 
     public void updateAcmer(Acmer acmer) {
+        logger.info("Updating Acmer successfully.");
         acmerRepository.save(acmer);
     }
 
@@ -61,8 +70,10 @@ public class AcmerService implements UserDetailsService {
         if (acmer != null && !acmer.getRole().equals(Role.ADMIN)) {
             acmerRepository.delete(acmer);
         } else {
+            logger.warn("Cannot delete an ADMIN");
             return false;
         }
+        logger.info("Acmer deleted successfully.");
         return true;
     }
 
@@ -73,6 +84,7 @@ public class AcmerService implements UserDetailsService {
                 acmerRepository.delete(acmer);
             }
         }
+        logger.info("All Acmers are Deleted successfully.");
     }
 
     public Acmer getAcmerInfosByHandle(String handle) {
@@ -97,6 +109,7 @@ public class AcmerService implements UserDetailsService {
     public boolean createAcmer(Acmer acmerData) {
         Optional<Acmer> acmerObj = acmerRepository.findById(acmerData.getHandle());
         if (acmerObj.isPresent()) {
+            logger.error("Error in registering Acmer!");
             return false;
         }
         Acmer acmer = getAcmerInfosByHandle(acmerData.getHandle());
@@ -107,6 +120,8 @@ public class AcmerService implements UserDetailsService {
         acmer.setPassword(encryptedPassword);
         acmer.setCountry("Tunisia");
         acmerRepository.save(acmer);
+        refreshAcmerData(acmer);
+        logger.info("Acmer registered successfully!");
         return true;
     }
 
@@ -138,8 +153,10 @@ public class AcmerService implements UserDetailsService {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("Error in adding Acmers!");
             return false;
         }
+        logger.info("Adding Acmers successfully.");
         return true;
     }
 
@@ -148,6 +165,7 @@ public class AcmerService implements UserDetailsService {
             Acmer acmer = getAcmerInfosByHandle("bacali");
             acmer.setPassword(this.bCryptPasswordEncoder.encode("95253834"));
             acmerRepository.save(acmer);
+            refreshAcmerData(acmer);
         }
         if (acmerRepository.findByHandle("myob-_-") == null) {
             Acmer acmer = getAcmerInfosByHandle("myob-_-");
@@ -155,8 +173,10 @@ public class AcmerService implements UserDetailsService {
             acmer.setLastName("Sghaier");
             acmer.setEmail("nesrinesghaier10@gmail.com");
             acmer.setPassword(this.bCryptPasswordEncoder.encode("50609713"));
+            refreshAcmerData(acmer);
             acmerRepository.save(acmer);
         }
+        logger.info("All Admins added successfully");
     }
 
     @Override
@@ -242,6 +262,17 @@ public class AcmerService implements UserDetailsService {
             }
         }
         return score;
+    }
+
+
+    public void refreshAcmerData(Acmer acmer) {
+        taskExecutor.execute(() -> {
+            String handle = acmer.getHandle();
+            logger.info("Refreshing data for %s begin now!".replace("%s", handle));
+            Map<Integer, Contest> contests = acmerDAO.getAllAvailableContests();
+            updateAcmerScore(acmer, contests);
+            logger.info("Data of %s was successfully refreshed!".replace("%s", handle));
+        });
     }
 }
 

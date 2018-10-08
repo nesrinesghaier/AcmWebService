@@ -1,6 +1,6 @@
 import {Component, OnInit, Input} from '@angular/core';
 import {Acmer} from "../../model/Acmer";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-acmer-details',

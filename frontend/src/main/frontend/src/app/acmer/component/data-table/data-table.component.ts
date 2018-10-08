@@ -1,10 +1,8 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatPaginator, MatSort, ThemePalette} from '@angular/material';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatPaginator, MatSort} from '@angular/material';
 import { DataTableDataSource } from './data-table-datasource';
 import {AcmerService} from "../../service/acmer.service";
-import {MatTableDataSource} from '@angular/material';
 import {Router} from '@angular/router';
-import {MatButtonModule} from '@angular/material/button';
 
 @Component({
   selector: 'app-data-table',

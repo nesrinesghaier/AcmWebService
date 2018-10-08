@@ -24,15 +24,10 @@ public class LoginController {
     AcmerService acmerService;
 
     @Autowired
-    AsynchronousService asynchronousService;
-
-    @Autowired
     AuthenticationManager authenticationManager;
 
     @Autowired
     JwtTokenUtil jwtTokenUtil;
-
-    private static final Logger logger = LoggerFactory.getLogger(AcmerController.class);
 
     @PostMapping(value = "/login")
     public ResponseEntity<Acmer> login(@RequestBody Acmer loginUser) {
@@ -55,11 +50,9 @@ public class LoginController {
     public ResponseEntity<Void> register(@RequestBody Acmer registerAcmer) {
         boolean bool = acmerService.createAcmer(registerAcmer);
         if (!bool) {
-            logger.error("Error in registering Acmer!");
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        asynchronousService.refreshAcmerData(acmerService.findByHandle(registerAcmer.getHandle()));
-        logger.info("Acmer registered successfully!");
+        acmerService.refreshAcmerData(acmerService.findByHandle(registerAcmer.getHandle()));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

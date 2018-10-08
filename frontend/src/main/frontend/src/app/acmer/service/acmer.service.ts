@@ -56,7 +56,7 @@ export class AcmerService {
 
   constructor(private http: HttpClient) {
     this._queue = <BehaviorSubject<FileQueueObject[]>>new BehaviorSubject(this._files);
-    let jwt = localStorage.getItem('token');
+    let jwt = sessionStorage.getItem('token');
     this.reqHeader = new HttpHeaders({
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ export class AcmerService {
     const req = new HttpRequest('POST', this.apiUrl + '/createAll', form, {
       reportProgress: true,
       headers: new HttpHeaders({
-        'Authorization': localStorage.getItem('token')
+        'Authorization': sessionStorage.getItem('token')
       })
     });
 

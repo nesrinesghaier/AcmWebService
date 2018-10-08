@@ -4,7 +4,11 @@ import {Acmer} from "../../acmer/model/Acmer";
 
 @Injectable()
 export class AuthenticationService {
-  authenticated = false;
+
+  public static loggedIn = false;
+  public static adminPrevilege = false;
+  public static handle = "";
+
   private hostUrl: string = "/auth";
   private options = {headers: new HttpHeaders().set('Content-Type', 'application/json')};
 

@@ -1,6 +1,5 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {SlimLoadingBarService} from 'ng2-slim-loading-bar';
-
 import {
   NavigationCancel,
   Event,
@@ -9,52 +8,53 @@ import {
   NavigationStart,
   Router
 } from '@angular/router';
-import {AcmerService} from "./acmer/service/acmer.service";
+
 import {AuthenticationService} from "./Authentication/service/authentication.service";
-import {LocaleDataIndex} from "@angular/common/src/i18n/locale_data";
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  loggedIn = false;
-  adminPrevilege = false;
-  handle = "";
-  title = 'frontend';
+export class AppComponent implements OnInit {
 
-  constructor(private _loadingBar: SlimLoadingBarService, private _router: Router, public acmerService: AuthenticationService) {
-    this.loggedIn = localStorage.getItem('loggedIn') != null;
-    this.adminPrevilege = localStorage.getItem('role') == "ADMIN";
-    this.handle = (localStorage.getItem('handle') == null) ? "" : localStorage.getItem('handle');
-    this._router.events.subscribe((event: Event) => {
+  public authService = AuthenticationService;
+
+  constructor(private loadingBar: SlimLoadingBarService, private router: Router) {
+
+  }
+
+  ngOnInit(): void {
+    AuthenticationService.loggedIn = sessionStorage.getItem('loggedIn') != null;
+    AuthenticationService.adminPrevilege = sessionStorage.getItem('role') == "ADMIN";
+    AuthenticationService.handle = (sessionStorage.getItem('handle') == null) ? "" : sessionStorage.getItem('handle');
+    this.router.events.subscribe((event: Event) => {
       this.navigationInterceptor(event);
     });
   }
 
   onLogout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('handle');
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('role');
-    this.loggedIn = false;
-    this.adminPrevilege = false;
-    this.handle = null;
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('handle');
+    sessionStorage.removeItem('loggedIn');
+    sessionStorage.removeItem('role');
+    this.authService.loggedIn = false;
+    this.authService.adminPrevilege = false;
+    this.authService.handle = null;
   }
 
   private navigationInterceptor(event: Event): void {
     if (event instanceof NavigationStart) {
-      this._loadingBar.start();
+      this.loadingBar.start();
     }
     if (event instanceof NavigationEnd) {
-      this._loadingBar.complete();
+      this.loadingBar.complete();
     }
     if (event instanceof NavigationCancel) {
-      this._loadingBar.stop();
+      this.loadingBar.stop();
     }
     if (event instanceof NavigationError) {
-      this._loadingBar.stop();
+      this.loadingBar.stop();
     }
   }
 }
