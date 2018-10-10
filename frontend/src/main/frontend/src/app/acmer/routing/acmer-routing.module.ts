@@ -10,7 +10,9 @@ const routes: Routes = [
   {path: 'acmers', component: AcmerListComponent},
   {path: 'acmers/create', component: AcmerAddComponent},
   //{path: 'acmers/login', component: DataTableComponent},
+  {path: 'acmers/edit', redirectTo: 'acmers'},
   {path: 'acmers/edit/:handle', component: AcmerEditComponent},
+  {path: 'acmers/details', redirectTo: 'acmers'},
   {path: 'acmers/details/:handle', component: AcmerDetailsComponent}
 ];
 @NgModule({

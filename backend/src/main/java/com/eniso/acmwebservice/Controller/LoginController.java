@@ -41,8 +41,6 @@ public class LoginController {
         Acmer acmer = acmerService.findByHandle(loginUser.getUsername());
         String token = jwtTokenUtil.generateToken(acmer);
         acmer.setToken(token);
-        acmerService.updateAcmer(acmer);
-        acmer.setPassword("****");
         return new ResponseEntity<>(acmer, HttpStatus.OK);
     }
 

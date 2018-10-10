@@ -43,9 +43,9 @@
               <button *ngIf="loggedInAcmer!=acmer.handle && adminPrevilege" class="delete btn btn-danger"
                       (click)="deleteAcmer(acmer)">Delete
               </button>
-              <a *ngIf="loggedInAcmer==acmer.handle || adminPrevilege" class="btn btn-info"
+              <button *ngIf="loggedInAcmer==acmer.handle || adminPrevilege" class="btn btn-info"
                  [routerLink]="['/acmers/edit', acmer.handle]"
-                 style="background-color:#17a2b8;float:inside !important;"> Edit</a>
+                 style="background-color:#17a2b8;float:inside !important;">Edit</button>
           </tr>
           </tbody>
         </table>

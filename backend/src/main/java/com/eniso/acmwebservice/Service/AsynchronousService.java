@@ -28,12 +28,12 @@ public class AsynchronousService {
 
     private static final Logger logger = LoggerFactory.getLogger(AsynchronousService.class);
 
-    @Scheduled(fixedDelay = Constants.REFRESH_DATA_DELAY_SECONDS * 1000)
-    public void refreshData() {
-        logger.info("Starting updating data...");
-        acmerService.updateAcmersScore();
-        logger.info("Updating data finished successfully");
-    }
+//    @Scheduled(fixedDelay = Constants.REFRESH_DATA_DELAY_SECONDS * 1000)
+//    public void refreshData() {
+//        logger.info("Starting updating data...");
+//        acmerService.updateAcmersScore();
+//        logger.info("Updating data finished successfully");
+//    }
 
 
 

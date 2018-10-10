@@ -1,5 +1,6 @@
 package com.eniso.acmwebservice.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -218,6 +219,7 @@ public class Acmer implements Serializable, UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         GrantedAuthority auth = () -> getRole().getAuthority();
         return Collections.singletonList(auth);

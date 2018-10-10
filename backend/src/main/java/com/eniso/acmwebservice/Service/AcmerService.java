@@ -49,7 +49,8 @@ public class AcmerService implements UserDetailsService {
     public Acmer findByHandle(String handle) {
         Acmer acmer = acmerRepository.findByHandle(handle);
         if (acmer == null) {
-            return getAcmerInfosByHandle(handle);
+            logger.info("Cannot found Acmer with handle %s!", handle);
+            return null;
         }
         logger.info("Acmer found by handle %s successfully.", handle);
         return acmer;
@@ -62,6 +63,9 @@ public class AcmerService implements UserDetailsService {
 
     public void updateAcmer(Acmer acmer) {
         logger.info("Updating Acmer successfully.");
+        String rawPassword = acmer.getPassword();
+        String cryptedPassword = bCryptPasswordEncoder.encode(rawPassword);
+        acmer.setPassword(cryptedPassword);
         acmerRepository.save(acmer);
     }
 
@@ -94,10 +98,12 @@ public class AcmerService implements UserDetailsService {
                 return null;
             }
             acmer = acmerDAO.getJsonResult(handle);
-            if (acmer.getHandle().equals("bacali") || acmer.getHandle().equals("myob-_-")) {
-                acmer.setRole(Role.ADMIN);
-            } else {
-                acmer.setRole(Role.USER);
+            if (acmer != null) {
+                if (acmer.getHandle().equals("bacali") || acmer.getHandle().equals("myob-_-")) {
+                    acmer.setRole(Role.ADMIN);
+                } else {
+                    acmer.setRole(Role.USER);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -208,40 +214,41 @@ public class AcmerService implements UserDetailsService {
         problemsCount.put("F", 0);
         problemsCount.put("G", 0);
         problemsCount.put("H", 0);
-
-        Set<String> set = new HashSet();
-        for (int i = 0; i < result.getResult().size(); i++) {
-            Submission submission = result.getResult().get(i);
-            int contestId = submission.getContestId();
-            if (contests.containsKey(contestId) && submission.getVerdict().equals("OK")) {
-                Problem problem = submission.getProblem();
-                char pbIndex = problem.getIndex().charAt(0);
-                Contest contest = contests.get(contestId);
-                if (contest.getName().contains("div. 3")) {
-                    pbIndex = (char) Math.max('A', pbIndex - 2);
-                } else if (contest.getName().contains("div. 1")) {
-                    pbIndex = (char) Math.min('H', pbIndex + 2);
-                }
-                if (!set.contains(problem.getName())) {
-                    set.add(problem.getName());
-                    String key = String.valueOf(pbIndex);
-                    if (problemsCount.containsKey(key)) {
-                        problemsCount.put(key, problemsCount.get(key) + 1);
+        if (result.getResult() != null) {
+            Set<String> set = new HashSet();
+            for (int i = 0; i < result.getResult().size(); i++) {
+                Submission submission = result.getResult().get(i);
+                int contestId = submission.getContestId();
+                if (contests.containsKey(contestId) && submission.getVerdict().equals("OK")) {
+                    Problem problem = submission.getProblem();
+                    char pbIndex = problem.getIndex().charAt(0);
+                    Contest contest = contests.get(contestId);
+                    if (contest.getName().contains("div. 3")) {
+                        pbIndex = (char) Math.max('A', pbIndex - 2);
+                    } else if (contest.getName().contains("div. 1")) {
+                        pbIndex = (char) Math.min('H', pbIndex + 2);
+                    }
+                    if (!set.contains(problem.getName())) {
+                        set.add(problem.getName());
+                        String key = String.valueOf(pbIndex);
+                        if (problemsCount.containsKey(key)) {
+                            problemsCount.put(key, problemsCount.get(key) + 1);
+                        }
                     }
                 }
             }
-        }
-        int size = set.size();
-        if (size > acmer.getSolvedProblems()) {
-            int score = calculScore(problemsCount);
-            acmer.setScore(score);
-            acmer.setSolvedProblems(size);
-            try {
-                acmer.setSolvedProblemsDetails(new ObjectMapper().writeValueAsString(problemsCount));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            int size = set.size();
+            if (size > acmer.getSolvedProblems()) {
+                int score = calculScore(problemsCount);
+                acmer.setScore(score);
+                acmer.setSolvedProblems(size);
+                try {
+                    acmer.setSolvedProblemsDetails(new ObjectMapper().writeValueAsString(problemsCount));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                acmerRepository.save(acmer);
             }
-            acmerRepository.save(acmer);
         }
     }
 

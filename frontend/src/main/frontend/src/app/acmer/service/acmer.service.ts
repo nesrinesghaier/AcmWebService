@@ -53,14 +53,15 @@ export class AcmerService {
   private apiUrl = '/api/acmers';
   private _files: FileQueueObject[] = [];
   private reqHeader: HttpHeaders;
+  private jwt: string;
 
   constructor(private http: HttpClient) {
     this._queue = <BehaviorSubject<FileQueueObject[]>>new BehaviorSubject(this._files);
-    let jwt = sessionStorage.getItem('token');
+    this.jwt = sessionStorage.getItem('token');
     this.reqHeader = new HttpHeaders({
       'Accept': 'application/json, text/plain, */*',
       'Content-Type': 'application/json',
-      'Authorization': jwt
+      'Authorization': this.jwt
     });
   }
 
@@ -71,27 +72,27 @@ export class AcmerService {
   }
 
   getAllAcmers() {
-    return this.http.get<Acmer[]>(this.apiUrl, {headers: this.reqHeader});
+    return this.http.get<Array<Acmer>>(this.apiUrl, {headers: this.reqHeader});
   }
 
   getAcmerByHandle(handle: string) {
-    return this.http.get(this.apiUrl + '/' + handle, {headers: this.reqHeader});
+    return this.http.get<Acmer>(this.apiUrl + '/' + handle, {headers: this.reqHeader});
   }
 
   createAcmer(acmer: Acmer) {
-    return this.http.post<Acmer>(this.apiUrl + '/create', acmer, {headers: this.reqHeader});
+    return this.http.post(this.apiUrl + '/create', acmer, {headers: this.reqHeader});
+  }
+
+  updateAcmer(acmer: Acmer) {
+    return this.http.put(this.apiUrl, acmer, {headers: this.reqHeader});
   }
 
   deleteAcmer(acmer: Acmer) {
-    return this.http.delete(this.apiUrl + '/' + acmer.handle, {headers: this.reqHeader});
-  }
-
-  updateAcmer(acmer: Acmer): Observable<Object> {
-    return this.http.put<Acmer>(this.apiUrl, acmer, {headers: this.reqHeader});
+    return this.http.delete<Array<Acmer>>(this.apiUrl + '/' + acmer.handle, {headers: this.reqHeader});
   }
 
   deleteAllAcmers() {
-    return this.http.delete(this.apiUrl + '/deleteAll', {headers: this.reqHeader});
+    return this.http.delete<Array<Acmer>>(this.apiUrl + '/deleteAll', {headers: this.reqHeader});
   }
 
   // public events

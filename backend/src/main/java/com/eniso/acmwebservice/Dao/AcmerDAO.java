@@ -16,7 +16,7 @@ import java.util.Map;
 public class AcmerDAO {
 
     public SubmissionWrapper getSubmissionResult(Acmer acmer) {
-        SubmissionWrapper result = new SubmissionWrapper();
+        SubmissionWrapper result;
         try {
             URL url = new URL("http://codeforces.com/api/user.status?handle=" + acmer.getHandle());
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -25,18 +25,20 @@ public class AcmerDAO {
             result = objectMapper.readValue(url, SubmissionWrapper.class);
         } catch (IOException e) {
             e.printStackTrace();
+            return new SubmissionWrapper();
         }
         return result;
     }
 
     public Acmer getJsonResult(String handle) {
-        Acmer acmer = new Acmer();
+        Acmer acmer;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             AcmerWrapper result = objectMapper.readValue(new URL("http://codeforces.com/api/user.info?handles=" + handle), AcmerWrapper.class);
             acmer = result.getResult().get(0);
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
         return acmer;
     }

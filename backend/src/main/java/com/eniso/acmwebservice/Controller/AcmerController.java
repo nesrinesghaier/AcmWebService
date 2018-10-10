@@ -29,13 +29,22 @@ public class AcmerController {
     @Autowired
     AcmerService acmerService;
 
-    @GetMapping(value = "")
+    @GetMapping("")
     public ResponseEntity<Collection<Acmer>> getAllAcmer() {
         List<Acmer> acmerList = new ArrayList<>(acmerService.findAllAcmers());
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/create")
+    @GetMapping(value = "/{handle:.+}")
+    public ResponseEntity<Acmer> findByHandle(@PathVariable String handle) {
+        Acmer acmer = acmerService.findByHandle(handle);
+        if (acmer == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(acmer, HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
     public ResponseEntity<Void> createAcmer(@RequestBody Acmer acmerData) {
         boolean bool = acmerService.createAcmer(acmerData);
         if (!bool) {
@@ -72,16 +81,7 @@ public class AcmerController {
         return new ResponseEntity<>(acmerList, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{handle:.+}")
-    public ResponseEntity<Acmer> findByHandle(@PathVariable String handle) {
-        Acmer acmer = acmerService.findByHandle(handle);
-        if (acmer == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(acmer, HttpStatus.OK);
-    }
-
-    @PutMapping(value = "")
+    @PutMapping("")
     public ResponseEntity<Void> updateAcmer(@RequestBody Acmer acmer) {
         acmerService.updateAcmer(acmer);
         return new ResponseEntity<>(HttpStatus.OK);

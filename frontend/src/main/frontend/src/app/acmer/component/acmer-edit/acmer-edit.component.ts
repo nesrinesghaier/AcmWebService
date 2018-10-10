@@ -1,33 +1,25 @@
-import {Component, OnInit, Output, EventEmitter} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {AcmerService} from "../../service/acmer.service";
 import {Acmer} from "../../model/Acmer";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {RegisterService} from "../../../Authentication/service/register.service";
 
 @Component({
   selector: 'app-acmer-edit',
   templateUrl: './acmer-edit.component.html',
   styleUrls: ['./acmer-edit.component.css']
 })
+
 export class AcmerEditComponent implements OnInit {
-  option: FormGroup;
-  items: any;
-  empty: string = "";
-  @Output()
-  eventEmitter: EventEmitter<string> = new EventEmitter<string>();
+  public emailRegex = '^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$';
+  public passwordRegex = '^[0-9]{8}$';
+  public isError: boolean = false;
+  public errorMessage: string = '';
+  public hasTried: boolean = false;
+  public acmer: Acmer = new Acmer();
+  public handle: string = '';
 
-  acmer: Acmer = new Acmer();
-  public handle: string;
-  acmerHandle: string;
-  acmerEmail = 'handle Email';
-  acmerFirstName = 'acmerFirstName';
-  acmerLastName = 'acmerLastName';
-
-  constructor(private router: Router, private acmerService: AcmerService, private formBuilder: FormBuilder, private route: ActivatedRoute) {
-    this.option = this.formBuilder.group({
-      firstName: ['', Validators.required],
-      obligation: '',
-    });
+  constructor(private router: Router, private acmerService: AcmerService, private route: ActivatedRoute, private registerService: RegisterService) {
   }
 
   ngOnInit() {
@@ -38,29 +30,36 @@ export class AcmerEditComponent implements OnInit {
       }
     });
     this.acmerService.getAcmerByHandle(this.handle).subscribe(acmer => {
-      this.acmer.handle = acmer['handle'] == null ? "" : acmer['handle'];
-      this.acmer.firstName = acmer['firstName'] == null ? "" : acmer['firstName'];
-      this.acmer.lastName = acmer['lastName'] == null ? "" : acmer['lastName'];
-      this.acmer.email = acmer['email'] == null ? "" : acmer['email'];
-      this.acmer.country = acmer['country'] == null ? "" : acmer['country'];
-      this.acmer.rank = acmer['rank'] == null ? "" : acmer['rank'];
-      this.acmer.maxRank = acmer['maxRank'] == null ? "" : acmer['maxRank'];
-      this.acmer.rating = acmer['rating'] == null ? "" : acmer['rating'];
-      this.acmer.maxRating = acmer['maxRating'] == null ? "" : acmer['maxRating'];
-      this.acmer.solvedProblems = acmer['solvedProblems'] == null ? "" : acmer['solvedProblems'];
-      this.acmer.score = acmer['score'] == null ? "" : acmer['score'];
-      this.acmer.password = acmer['password'] == null ? "" : acmer['password'];
-      this.acmer.role = acmer['role'] == null ? "" : acmer['role'];
-    }, error => {
-      console.log(error);
+      this.acmer = acmer;
+      this.acmer.password='';
+    }, () => {
+      this.router.navigate(['/acmers']);
     });
   }
 
   editAcmer(): void {
-    this.acmerService.updateAcmer(this.acmer).subscribe(data => {
-      this.router.navigate(['acmers']);
-    }, error => console.log(error));
+    this.hasTried = true;
+    if (this.validateForm()) {
+      this.acmerService.updateAcmer(this.acmer).subscribe(() => {
+        alert("Acmer edited successfully");
+        this.router.navigate(['/acmers']);
+      }, error => {
+        this.isError = true;
+        if (error.status == 504) {
+          this.errorMessage = 'No Connection!';
+        }
+      });
+    }
+
   }
 
+  validateForm(): boolean {
+    return this.acmer.firstName != '' &&
+      this.acmer.lastName != '' &&
+      this.acmer.email != '' &&
+      this.acmer.email.match(this.emailRegex) != null &&
+      this.acmer.password != '' &&
+      this.acmer.password.match(this.passwordRegex) != null;
+  }
 }
 
