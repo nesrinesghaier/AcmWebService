@@ -8,67 +8,40 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
 @Entity
+@Table(name = "TBL_ACMERS")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Acmer implements Serializable, UserDetails {
     @Id
-    @Column(name = "handle")
     private String handle;
-    @Column(name = "firstName")
     @Nullable
     private String firstName;
     @Nullable
-    @Column(name = "lastName")
     private String lastName;
     @Nullable
-    @Column(name = "email")
     private String email;
     @Nullable
-    @Column(name = "country")
     private String country;
     @Nullable
-    @Column(name = "rank")
     private String rank;
     @Nullable
-    @Column(name = "maxRank")
     private String maxRank;
-    @Column(name = "rating")
     private int rating;
-    @Column(name = "maxRating")
     private int maxRating;
-    @Column(name = "solvedProblems")
     private int solvedProblems;
-    @Column(name = "score")
     private int score;
     @Nullable
-    @Column(name = "token", unique = true)
+    @Column(unique = true)
     private String token;
-    @Column(name = "password")
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @Nullable
-    @Column(name = "solvedProblemsDetails")
-    private String solvedProblemsDetails;
-
-    public Acmer(String handle, String email, String firstName, String lastName, String country, String rank, String maxRank, int rating, int maxRating, int solvedProblems, String password, Role role, String solvedProblemsDetails) {
-        this.lastName = lastName;
-        this.handle = handle;
-        this.email = email;
-        this.firstName = firstName;
-        this.country = country;
-        this.rank = rank;
-        this.maxRank = maxRank;
-        this.rating = rating;
-        this.maxRating = maxRating;
-        this.solvedProblems = solvedProblems;
-        this.password = password;
-        this.role = role;
-        this.solvedProblemsDetails = solvedProblemsDetails;
-    }
+    @OneToMany(fetch = FetchType.EAGER)
+    private Collection<ProblemsDetails> solvedProblemsDetails = new ArrayList<>();
 
     public Acmer() {
     }
@@ -202,11 +175,11 @@ public class Acmer implements Serializable, UserDetails {
         this.solvedProblems = solvedProblems;
     }
 
-    public String getSolvedProblemsDetails() {
+    public Collection<ProblemsDetails> getSolvedProblemsDetails() {
         return solvedProblemsDetails;
     }
 
-    public void setSolvedProblemsDetails(String solvedProblemsDetails) {
+    public void setSolvedProblemsDetails(Collection<ProblemsDetails> solvedProblemsDetails) {
         this.solvedProblemsDetails = solvedProblemsDetails;
     }
 

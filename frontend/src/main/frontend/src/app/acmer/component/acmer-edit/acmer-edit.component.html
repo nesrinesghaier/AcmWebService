@@ -37,9 +37,6 @@
       <div class="form-group">
         <input [(ngModel)]="acmer.password" type="password" placeholder="Password" (click)="hasTried = false;isError = false"
                name="password" class="form-control" id="password" required>
-        <div class="text-danger" *ngIf="acmer.password=='' && hasTried">
-          *Password is required!
-        </div>
         <div class="text-danger" *ngIf="acmer.password!='' && !acmer.password.match(passwordRegex) && hasTried">
           *Password must be valid (ex: 99887766)!
         </div>

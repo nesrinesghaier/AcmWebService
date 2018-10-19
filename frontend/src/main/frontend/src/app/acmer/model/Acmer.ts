@@ -1,3 +1,5 @@
+import {ProblemsDetails} from "./ProblemsDetails";
+
 export class Acmer {
   lastName: string;
   handle: string;
@@ -12,9 +14,8 @@ export class Acmer {
   score:number;
   password: string;
   token: string;
-  solvedProblemsDetails: string;
+  solvedProblemsDetails: ProblemsDetails[];
   role:Role;
-
 
   constructor() {
     this.handle = '';

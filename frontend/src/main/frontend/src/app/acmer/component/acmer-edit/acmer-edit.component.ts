@@ -31,7 +31,7 @@ export class AcmerEditComponent implements OnInit {
     });
     this.acmerService.getAcmerByHandle(this.handle).subscribe(acmer => {
       this.acmer = acmer;
-      this.acmer.password='';
+      this.acmer.password = '';
     }, () => {
       this.router.navigate(['/acmers']);
     });
@@ -58,8 +58,8 @@ export class AcmerEditComponent implements OnInit {
       this.acmer.lastName != '' &&
       this.acmer.email != '' &&
       this.acmer.email.match(this.emailRegex) != null &&
-      this.acmer.password != '' &&
-      this.acmer.password.match(this.passwordRegex) != null;
+      (this.acmer.password == '' ||
+        this.acmer.password.match(this.passwordRegex) != null);
   }
 }
 

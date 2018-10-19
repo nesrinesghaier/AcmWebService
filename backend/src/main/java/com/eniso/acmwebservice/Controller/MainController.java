@@ -23,7 +23,7 @@ public class MainController {
         this.acmerService = acmerService;
     }
 
-    @GetMapping(value = {"/", "/login", "/acmers"})
+    @GetMapping(value = {"/", "/login","/register", "/acmers"})
     public String index() {
         return "forward:/index.html";
     }

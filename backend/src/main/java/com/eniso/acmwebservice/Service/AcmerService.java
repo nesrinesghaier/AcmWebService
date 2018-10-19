@@ -2,6 +2,7 @@ package com.eniso.acmwebservice.Service;
 
 import com.eniso.acmwebservice.Dao.AcmerDAO;
 import com.eniso.acmwebservice.Dao.AcmerRepository;
+import com.eniso.acmwebservice.Dao.ProblemsDetailsRepository;
 import com.eniso.acmwebservice.Entity.*;
 import com.eniso.acmwebservice.Security.JwtTokenUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,6 +35,9 @@ public class AcmerService implements UserDetailsService {
     AcmerRepository acmerRepository;
 
     @Autowired
+    ProblemsDetailsRepository problemsDetailsRepository;
+
+    @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
@@ -49,7 +53,7 @@ public class AcmerService implements UserDetailsService {
     public Acmer findByHandle(String handle) {
         Acmer acmer = acmerRepository.findByHandle(handle);
         if (acmer == null) {
-            logger.info("Cannot found Acmer with handle %s!", handle);
+            logger.error("Cannot found Acmer with handle %s!", handle);
             return null;
         }
         logger.info("Acmer found by handle %s successfully.", handle);
@@ -62,10 +66,20 @@ public class AcmerService implements UserDetailsService {
     }
 
     public void updateAcmer(Acmer acmer) {
+        if (acmer.getPassword().isEmpty()) {
+            Acmer dbAcmer = findByHandle(acmer.getHandle());
+            if (dbAcmer != null) {
+                acmer.setPassword(dbAcmer.getPassword());
+            } else {
+                logger.error("Echec updating Acmer.");
+                return;
+            }
+        } else {
+            String rawPassword = acmer.getPassword();
+            String cryptedPassword = bCryptPasswordEncoder.encode(rawPassword);
+            acmer.setPassword(cryptedPassword);
+        }
         logger.info("Updating Acmer successfully.");
-        String rawPassword = acmer.getPassword();
-        String cryptedPassword = bCryptPasswordEncoder.encode(rawPassword);
-        acmer.setPassword(cryptedPassword);
         acmerRepository.save(acmer);
     }
 
@@ -242,11 +256,13 @@ public class AcmerService implements UserDetailsService {
                 int score = calculScore(problemsCount);
                 acmer.setScore(score);
                 acmer.setSolvedProblems(size);
-                try {
-                    acmer.setSolvedProblemsDetails(new ObjectMapper().writeValueAsString(problemsCount));
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                Collection<ProblemsDetails> problemsDetails = new ArrayList<>();
+                for (String problemIndex : problemsCount.keySet()) {
+                    problemsDetails.add(new ProblemsDetails(problemIndex, problemsCount.get(problemIndex)));
                 }
+                problemsDetailsRepository.deleteAll(acmer.getSolvedProblemsDetails());
+                problemsDetailsRepository.saveAll(problemsDetails);
+                acmer.setSolvedProblemsDetails(problemsDetails);
                 acmerRepository.save(acmer);
             }
         }
