@@ -260,8 +260,6 @@ public class AcmerService implements UserDetailsService {
                 for (String problemIndex : problemsCount.keySet()) {
                     problemsDetails.add(new ProblemsDetails(problemIndex, problemsCount.get(problemIndex)));
                 }
-                problemsDetailsRepository.deleteAll(acmer.getSolvedProblemsDetails());
-                problemsDetailsRepository.saveAll(problemsDetails);
                 acmer.setSolvedProblemsDetails(problemsDetails);
                 acmerRepository.save(acmer);
             }

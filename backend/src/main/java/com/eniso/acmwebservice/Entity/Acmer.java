@@ -40,7 +40,7 @@ public class Acmer implements Serializable, UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Collection<ProblemsDetails> solvedProblemsDetails = new ArrayList<>();
 
     public Acmer() {
