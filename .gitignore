@@ -23,3 +23,10 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+.gitignore
+
+backend/target/
+frontend/src/main/frontend/node/
+frontend/src/main/frontend/node_modules/
+frontend/target/
