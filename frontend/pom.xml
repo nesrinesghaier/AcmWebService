@@ -23,7 +23,7 @@
                 <configuration>
                     <nodeVersion>v8.11.4</nodeVersion>
                     <npmVersion>6.4.1</npmVersion>
-                    <workingDirectory>src/main/frontend</workingDirectory>
+                    <workingDirectory>src/main</workingDirectory>
                 </configuration>
 
                 <executions>
