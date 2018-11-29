@@ -1,0 +1,61 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <div class="col-md-4 col-md-offset-4">
+
+    <div style="margin-top: 9% ;border-color: #17a2b8" class="panel panel-primary">
+
+      <div class="panel-heading" style="background-color: #17a2b8">Registration</div>
+      <div class="panel-body" >
+        <form (ngSubmit)="register()">
+          <div class="form-group">
+            <input [(ngModel)]="acmer.firstName" type="text" placeholder="First Name" (click)="tried = false;error = false"
+                   name="firstName" class="form-control" id="firstName" required>
+            <div class="text-danger" *ngIf="acmer.firstName=='' && tried">
+              *First name is required!
+            </div>
+          </div>
+          <div class="form-group">
+            <input [(ngModel)]="acmer.lastName" type="text" placeholder="Last Name" (click)="tried = false;error = false"
+                   name="lastName" class="form-control" id="lastName" required>
+            <div class="text-danger" *ngIf="acmer.lastName=='' && tried">
+              *Last name is required!
+            </div>
+          </div>
+          <div class="form-group">
+            <input [(ngModel)]="acmer.handle" type="text" placeholder="Handle" (click)="tried = false;error = false"
+                   name="handle" class="form-control" id="handle" required>
+            <div class="text-danger" *ngIf="acmer.handle=='' && tried">
+              *The Handle is required!
+            </div>
+          </div>
+          <div class="form-group">
+            <input [(ngModel)]="acmer.email" type="email" placeholder="Email" (click)="tried = false;"
+                   name="email" class="form-control" id="email" required>
+            <div class="text-danger" *ngIf="acmer.email=='' && tried">
+              *Email is required!
+            </div>
+            <div class="text-danger" *ngIf="acmer.email!='' && !acmer.email.match(emailRegex) && tried">
+              *Email must be valid (ex: address.mail@gmail.com)!
+            </div>
+          </div>
+          <div class="form-group">
+            <input [(ngModel)]="acmer.password" type="password" placeholder="Password" (click)="tried = false;error = false"
+                   name="password" class="form-control" id="password" required>
+            <div class="text-danger" *ngIf="acmer.password=='' && tried">
+              *Password is required!
+            </div>
+            <div class="text-danger" *ngIf="acmer.password!='' && !acmer.password.match(passwordRegex) && tried">
+              *Password must be valid (ex: 99887766)!
+            </div>
+          </div>
+          <button class="btn btn-success">Register</button>
+          <p style="margin-top: 3px">Already have an account? <a href="/login">Login!</a></p>
+        </form>
+      </div>
+    </div>
+    <div  style="margin-top: 20px" class=" alert alert-danger" *ngIf="error">
+      {{errorMessage}}
+    </div>
+
+  </div>

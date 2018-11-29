@@ -1,0 +1,31 @@
+
+.mat-table {
+  overflow: auto;
+  max-height: 500px;
+  min-width: 300px;
+  align-self: center;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  display: table;
+  border-collapse: collapse;
+}
+.mat-elevation-z8{
+  align-content: center;
+}
+.mat-row,
+.mat-header-row {
+  display: table-row;
+}
+.mat-cell{
+  word-wrap: initial;
+  display: table-cell;
+  padding: 0px 5px;
+  line-break: unset;
+  white-space: nowrap;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.mat-button{
+  background-color: black;
+}

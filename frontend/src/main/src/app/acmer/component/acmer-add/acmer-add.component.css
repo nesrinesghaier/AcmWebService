@@ -1,0 +1,10 @@
+
+body{
+  padding: 50px;
+}
+input.ng-touched:required{
+  border: 1px solid #8C251D;
+}
+input.ng-touched:invalid{
+  border: 1px solid #8C251D;
+}
