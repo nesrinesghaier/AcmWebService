@@ -10,7 +10,7 @@ case $1 in
             if [ ! -f $PATH_TO_JAR ]; then
                 echo "$SERVICE_NAME can't be started! $PATH_TO_JAR does not exits!!"
             else
-                nohup java -jar $PATH_TO_JAR >> myService.out 2>&1&
+                nohup java -jar $PATH_TO_JAR >> $LOG_PATH_NAME 2>&1&
                 echo $! > $PID_PATH_NAME
                 echo "$SERVICE_NAME started ..."
             fi
