@@ -18,7 +18,7 @@ public class AcmerDAO {
     public SubmissionWrapper getSubmissionResult(Acmer acmer) {
         SubmissionWrapper result;
         try {
-            URL url = new URL("http://codeforces.com/api/user.status?handle=" + acmer.getHandle());
+            URL url = new URL("https://codeforces.com/api/user.status?handle=" + acmer.getHandle());
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.connect();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -34,7 +34,7 @@ public class AcmerDAO {
         Acmer acmer;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            AcmerWrapper result = objectMapper.readValue(new URL("http://codeforces.com/api/user.info?handles=" + handle), AcmerWrapper.class);
+            AcmerWrapper result = objectMapper.readValue(new URL("https://codeforces.com/api/user.info?handles=" + handle), AcmerWrapper.class);
             acmer = result.getResult().get(0);
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,7 +48,7 @@ public class AcmerDAO {
         HttpURLConnection urlConnection;
         URL url;
         try {
-            url = new URL("http://codeforces.com/api/contest.list?gym=false");
+            url = new URL("https://codeforces.com/api/contest.list?gym=false");
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setReadTimeout(10000);
             urlConnection.setConnectTimeout(15000);
