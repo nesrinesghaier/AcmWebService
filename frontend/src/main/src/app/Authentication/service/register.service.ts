@@ -5,7 +5,7 @@ import {Acmer} from "../../acmer/model/Acmer";
 @Injectable()
 export class RegisterService {
 
-  private codeforcesUrl: string = 'http://codeforces.com/api/user.info?handles=';
+  private codeforcesUrl: string = 'https://codeforces.com/api/user.info?handles=';
   private apiUrl: string = '/auth';
   private reqHeader: HttpHeaders;
 
