@@ -113,7 +113,7 @@ public class AcmerService implements UserDetailsService {
             }
             acmer = acmerDAO.getJsonResult(handle);
             if (acmer != null) {
-                if (acmer.getHandle().equals("bacali") || acmer.getHandle().equals("myob-_-")) {
+                if (acmer.getHandle().equals("_bacali") || acmer.getHandle().equals("myob-_-")) {
                     acmer.setRole(Role.ADMIN);
                 } else {
                     acmer.setRole(Role.USER);
@@ -181,8 +181,8 @@ public class AcmerService implements UserDetailsService {
     }
 
     public void populateAdmins() {
-        if (acmerRepository.findByHandle("bacali") == null) {
-            Acmer acmer = getAcmerInfosByHandle("bacali");
+        if (acmerRepository.findByHandle("_bacali") == null) {
+            Acmer acmer = getAcmerInfosByHandle("_bacali");
             acmer.setPassword(this.bCryptPasswordEncoder.encode("95253834"));
             acmerRepository.save(acmer);
             refreshAcmerData(acmer);
