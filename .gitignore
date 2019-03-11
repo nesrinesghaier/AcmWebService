@@ -29,4 +29,5 @@
 backend/target/
 frontend/src/main/node/
 frontend/src/main/node_modules/
+frontend/src/main/package-lock.json
 frontend/target/
