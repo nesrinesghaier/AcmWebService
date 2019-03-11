@@ -46,7 +46,7 @@
               *Password is required!
             </div>
             <div class="text-danger" *ngIf="acmer.password!='' && !acmer.password.match(passwordRegex) && tried">
-              *Password must be valid (ex: 99887766)!
+              *Password must be valid, a 8 digits form (ex: 99887766)!
             </div>
           </div>
           <button class="btn btn-success">Register</button>

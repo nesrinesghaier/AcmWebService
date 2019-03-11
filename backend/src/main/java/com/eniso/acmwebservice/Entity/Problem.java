@@ -2,6 +2,7 @@ package com.eniso.acmwebservice.Entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Problem {
@@ -16,9 +17,11 @@ public class Problem {
     @JsonProperty
     private int points;
     @JsonProperty
+    private int rating;
+    @JsonProperty
     private String problemsetName;
     @JsonProperty
-    private String []tags;
+    private String[] tags;
 
     public Problem() {
     }
@@ -79,11 +82,28 @@ public class Problem {
         this.tags = tags;
     }
 
-    @Override
-    public String toString() {
-        return "Problem{" + "contestId=" + contestId + ", index=" + index + ", name=" + name + ", type=" + type + ", points=" + points + ", problemsetName=" + problemsetName + ", tags=" + tags + '}';
+    public int getRating() {
+        return rating;
     }
 
+    public Problem setRating(int rating) {
+        this.rating = rating;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "Problem{" +
+                "contestId=" + contestId +
+                ", index='" + index + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", points=" + points +
+                ", rating=" + rating +
+                ", problemsetName='" + problemsetName + '\'' +
+                ", tags=" + Arrays.toString(tags) +
+                '}';
+    }
 
     @Override
     public int hashCode() {
@@ -109,5 +129,5 @@ public class Problem {
         }
         return true;
     }
-    
+
 }

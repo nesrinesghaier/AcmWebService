@@ -53,10 +53,10 @@ public class AcmerService implements UserDetailsService {
     public Acmer findByHandle(String handle) {
         Acmer acmer = acmerRepository.findByHandle(handle);
         if (acmer == null) {
-            logger.error("Cannot found Acmer with handle %s!", handle);
+            logger.error("Cannot found Acmer with handle " + handle + "!");
             return null;
         }
-        logger.info("Acmer found by handle %s successfully.", handle);
+        logger.info("Acmer found by handle " + handle + " successfully.");
         return acmer;
     }
 
@@ -136,6 +136,7 @@ public class AcmerService implements UserDetailsService {
         acmer.setFirstName(acmerData.getFirstName());
         acmer.setLastName(acmerData.getLastName());
         acmer.setEmail(acmerData.getEmail());
+        acmer.setRole(Role.USER);
         String encryptedPassword = this.bCryptPasswordEncoder.encode(acmerData.getPassword());
         acmer.setPassword(encryptedPassword);
         acmer.setCountry("Tunisia");
@@ -183,6 +184,10 @@ public class AcmerService implements UserDetailsService {
     public void populateAdmins() {
         if (acmerRepository.findByHandle("_bacali") == null) {
             Acmer acmer = getAcmerInfosByHandle("_bacali");
+            acmer.setFirstName("Nasreddine");
+            acmer.setLastName("Bac Ali");
+            acmer.setEmail("nasreddine.bacali95@gmail.com");
+            acmer.setRole(Role.ADMIN);
             acmer.setPassword(this.bCryptPasswordEncoder.encode("95253834"));
             acmerRepository.save(acmer);
             refreshAcmerData(acmer);
@@ -192,6 +197,7 @@ public class AcmerService implements UserDetailsService {
             acmer.setFirstName("Nesrine");
             acmer.setLastName("Sghaier");
             acmer.setEmail("nesrinesghaier10@gmail.com");
+            acmer.setRole(Role.ADMIN);
             acmer.setPassword(this.bCryptPasswordEncoder.encode("50609713"));
             refreshAcmerData(acmer);
             acmerRepository.save(acmer);
