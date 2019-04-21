@@ -1,44 +1,36 @@
+/**
+ * @license
+ * Copyright Akveo. All Rights Reserved.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
+import {APP_BASE_HREF} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
-
-import {AppRoutingModule} from './app-routing.module';
-import {AppComponent} from './app.component';
-import {AcmerModule} from "./acmer/acmer.module";
-import {HttpClientModule, HttpClient} from '@angular/common/http';
-import {AcmerService} from "./acmer/service/acmer.service";
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatMenuModule, MatButtonModule} from '@angular/material';
-import {SlimLoadingBarModule} from 'ng2-slim-loading-bar';
-import {LoginComponent} from './Authentication/login/login.component';
-import {FormsModule} from "@angular/forms";
-import {AuthenticationService} from "./Authentication/service/authentication.service";
-import {RegisterComponent} from "./Authentication/register/register.component";
-import {RegisterService} from "./Authentication/service/register.service";
+import {NgModule} from '@angular/core';
+import {HttpClientModule} from '@angular/common/http';
+import {CoreModule} from './@core/core.module';
 
+import {AppComponent} from './app.component';
+import {AppRoutingModule} from './app-routing.module';
+import {ThemeModule} from './@theme/theme.module';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {AuthGardService} from './services/auth-gard.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    RegisterComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    AcmerModule,
     BrowserAnimationsModule,
-    MatButtonModule,
-    MatMenuModule,
-    SlimLoadingBarModule,
-    FormsModule,
+    HttpClientModule,
+    AppRoutingModule,
+    NgbModule.forRoot(),
+    ThemeModule.forRoot(),
+    CoreModule.forRoot(),
   ],
+  bootstrap: [AppComponent],
   providers: [
-    AcmerService,
-    AuthenticationService,
-    RegisterService
+    {provide: APP_BASE_HREF, useValue: '/'}, AuthGardService
   ],
-  bootstrap: [AppComponent]
 })
 export class AppModule {
 }

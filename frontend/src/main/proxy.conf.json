@@ -1,10 +1,12 @@
 {
-  "/api/**": {
+  "/api": {
     "target": "http://localhost:4000",
-    "secure": false
+    "secure": true,
+    "debug": true
   },
-  "/auth/**": {
+  "/auth": {
     "target": "http://localhost:4000",
-    "secure": false
+    "secure": true,
+    "debug": true
   }
 }

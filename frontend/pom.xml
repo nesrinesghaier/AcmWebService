@@ -40,12 +40,12 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>npm run build</id>
+                        <id>npm run start</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>run start</arguments>
                         </configuration>
                     </execution>
                 </executions>

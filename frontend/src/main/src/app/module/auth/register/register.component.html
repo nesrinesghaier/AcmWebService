@@ -1,0 +1,207 @@
+<h1 id="title" class="title">Register</h1>
+
+<nb-alert *ngIf="showMessages.error && errors?.length && !submitted" outline="danger" role="alert">
+  <p class="alert-title"><b>Oh snap!</b></p>
+  <ul class="alert-message-list">
+    <li *ngFor="let error of errors" class="alert-message">{{ error }}</li>
+  </ul>
+</nb-alert>
+
+<nb-alert *ngIf="showMessages.success && messages?.length && !submitted" outline="success" role="alert">
+  <p class="alert-title"><b>Hooray!</b></p>
+  <ul class="alert-message-list">
+    <li *ngFor="let message of messages" class="alert-message">{{ message }}</li>
+  </ul>
+</nb-alert>
+
+<form (ngSubmit)="register()" #form="ngForm" aria-labelledby="title">
+  <div class="form-control-group">
+    <label class="label" for="handle">Handle:</label>
+    <input nbInput
+           [(ngModel)]="user.handle"
+           #handle="ngModel"
+           id="handle"
+           name="handle"
+           placeholder="Handle"
+           autofocus
+           fullWidth
+           [status]="handle.dirty ? (handle.invalid  ? 'danger' : 'success') : ''"
+           [required]="getConfigValue('forms.validation.handle.required')"
+           [minlength]="getConfigValue('forms.validation.handle.minLength')"
+           [maxlength]="getConfigValue('forms.validation.handle.maxLength')"
+           [attr.aria-invalid]="handle.invalid && handle.touched ? true : null">
+    <ng-container *ngIf="handle.invalid && handle.touched">
+      <p class="error-message" *ngIf="handle.errors?.required">
+        First name is required!
+      </p>
+      <p class="error-message" *ngIf="handle.errors?.minlength || handle.errors?.maxlength">
+        Full name should contains
+        from {{getConfigValue('forms.validation.handle.minLength')}}
+        to {{getConfigValue('forms.validation.handle.maxLength')}}
+        characters
+      </p>
+    </ng-container>
+  </div>
+  <div class="form-control-group">
+    <label class="label" for="first-name">First name:</label>
+    <input nbInput
+           [(ngModel)]="user.firstName"
+           #firstName="ngModel"
+           id="first-name"
+           name="firstName"
+           placeholder="First name"
+           autofocus
+           fullWidth
+           pattern="[a-zA-Z ]{1,}"
+           [status]="firstName.dirty ? (firstName.invalid  ? 'danger' : 'success') : ''"
+           [required]="getConfigValue('forms.validation.firstName.required')"
+           [minlength]="getConfigValue('forms.validation.firstName.minLength')"
+           [maxlength]="getConfigValue('forms.validation.firstName.maxLength')"
+           [attr.aria-invalid]="firstName.invalid && firstName.touched ? true : null">
+    <ng-container *ngIf="firstName.invalid && firstName.touched">
+      <p class="error-message" *ngIf="firstName.errors?.required">
+        First name is required!
+      </p>
+      <p class="error-message" *ngIf="firstName.errors?.minlength || firstName.errors?.maxlength">
+        Full name should contains
+        from {{getConfigValue('forms.validation.firstName.minLength')}}
+        to {{getConfigValue('forms.validation.firstName.maxLength')}}
+        characters
+      </p>
+    </ng-container>
+  </div>
+  <div class="form-control-group">
+    <label class="label" for="last-name">Last name:</label>
+    <input nbInput
+           [(ngModel)]="user.lastName"
+           #lastName="ngModel"
+           id="last-name"
+           name="lastName"
+           placeholder="Last name"
+           autofocus
+           fullWidth
+           pattern="[a-zA-Z ]{1,}"
+           [status]="lastName.dirty ? (lastName.invalid  ? 'danger' : 'success') : ''"
+           [required]="getConfigValue('forms.validation.lastName.required')"
+           [minlength]="getConfigValue('forms.validation.lastName.minLength')"
+           [maxlength]="getConfigValue('forms.validation.lastName.maxLength')"
+           [attr.aria-invalid]="lastName.invalid && lastName.touched ? true : null">
+    <ng-container *ngIf="lastName.invalid && lastName.touched">
+      <p class="error-message" *ngIf="lastName.errors?.required">
+        Full name is required!
+      </p>
+      <p class="error-message" *ngIf="lastName.errors?.minlength || lastName.errors?.maxlength">
+        Full name should contains
+        from {{getConfigValue('forms.validation.lastName.minLength')}}
+        to {{getConfigValue('forms.validation.lastName.maxLength')}}
+        characters
+      </p>
+    </ng-container>
+  </div>
+
+  <div class="form-control-group">
+    <label class="label" for="input-email">Email address:</label>
+    <input nbInput
+           [(ngModel)]="user.email"
+           #email="ngModel"
+           id="input-email"
+           name="email"
+           pattern=".+@.+..+"
+           placeholder="Email address"
+           fullWidth
+           [status]="email.dirty ? (email.invalid  ? 'danger' : 'success') : ''"
+           [required]="getConfigValue('forms.validation.email.required')"
+           [attr.aria-invalid]="email.invalid && email.touched ? true : null">
+    <ng-container *ngIf="email.invalid && email.touched">
+      <p class="error-message" *ngIf="email.errors?.required">
+        Email is required!
+      </p>
+      <p class="error-message" *ngIf="email.errors?.pattern">
+        Email should be the real one!
+      </p>
+    </ng-container>
+  </div>
+
+  <div class="form-control-group">
+    <label class="label" for="input-password">Password:</label>
+    <input nbInput
+           [(ngModel)]="user.password"
+           #password="ngModel"
+           type="password"
+           id="input-password"
+           name="password"
+           placeholder="Password"
+           pattern="[0-9]{8}"
+           fullWidth
+           [status]="password.dirty ? (password.invalid  ? 'danger' : 'success') : ''"
+           [required]="getConfigValue('forms.validation.password.required')"
+           [minlength]="getConfigValue('forms.validation.password.minLength')"
+           [maxlength]="getConfigValue('forms.validation.password.maxLength')"
+           [attr.aria-invalid]="password.invalid && password.touched ? true : null">
+    <ng-container *ngIf="password.invalid && password.touched">
+      <p class="error-message" *ngIf="password.errors?.required">
+        Password is required!
+      </p>
+      <p class="error-message" *ngIf="password.errors?.minlength || password.errors?.maxlength">
+        Password should contains
+        from {{ getConfigValue('forms.validation.password.minLength') }}
+        to {{ getConfigValue('forms.validation.password.maxLength') }}
+        characters
+      </p>
+    </ng-container>
+  </div>
+
+  <div class="form-control-group">
+    <label class="label" for="input-re-password">Repeat password:</label>
+    <input nbInput
+           [(ngModel)]="user.confirmPassword"
+           #rePass="ngModel"
+           type="password"
+           id="input-re-password"
+           name="rePass"
+           placeholder="Confirm Password"
+           pattern="[0-9]{8}"
+           fullWidth
+           [status]="rePass.dirty ? (rePass.invalid || password.value != rePass.value  ? 'danger' : 'success') : ''"
+           [required]="getConfigValue('forms.validation.password.required')"
+           [attr.aria-invalid]="rePass.invalid && rePass.touched ? true : null">
+    <ng-container *ngIf="rePass.invalid && rePass.touched">
+      <p class="error-message" *ngIf="rePass.errors?.required">
+        Password confirmation is required!
+      </p>
+      <p class="error-message" *ngIf="password.value != rePass.value && !rePass.errors?.required">
+        Password does not match the confirm password.
+      </p>
+    </ng-container>
+  </div>
+
+  <button nbButton
+          fullWidth
+          status="success"
+          [disabled]="submitted || !form.valid"
+          [class.btn-pulse]="submitted">
+    Register
+  </button>
+</form>
+
+<section *ngIf="socialLinks && socialLinks.length > 0" class="links" aria-label="Social sign in">
+  or enter with:
+  <div class="socials">
+    <ng-container *ngFor="let socialLink of socialLinks">
+      <a *ngIf="socialLink.link"
+         [routerLink]="socialLink.link"
+         [attr.target]="socialLink.target"
+         [attr.class]="socialLink.icon"
+         [class.with-icon]="socialLink.icon">{{ socialLink.title }}</a>
+      <a *ngIf="socialLink.url"
+         [attr.href]="socialLink.url"
+         [attr.target]="socialLink.target"
+         [attr.class]="socialLink.icon"
+         [class.with-icon]="socialLink.icon">{{ socialLink.title }}</a>
+    </ng-container>
+  </div>
+</section>
+
+<section class="another-action" aria-label="Sign in">
+  Already have an account? <a class="text-link" routerLink="../login">Log in</a>
+</section>
